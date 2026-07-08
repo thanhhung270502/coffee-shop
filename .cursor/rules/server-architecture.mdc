@@ -1,0 +1,122 @@
+---
+description: Backend server layer — repository/service/schema/types pattern for src/server/ and API routes
+globs: src/server/**/*.ts,src/app/api/**/*.ts,src/app/actions/**/*.ts
+alwaysApply: false
+---
+
+# Server Architecture
+
+## Layer Structure
+
+Organize server logic by domain under `src/server/<domain>/`:
+
+```
+src/server/<domain>/
+├── <domain>.repository.ts   # Data access — only layer that uses prisma
+├── <domain>.service.ts      # Business logic — calls repository
+├── <domain>.schema.ts       # Zod schemas (request/response validation)
+└── <domain>.types.ts        # Server-side TypeScript types
+```
+
+**Request flow:** `API route / Server Action` → validate with Zod → call **service** → service calls **repository** → prisma.
+
+## Repository (`<domain>.repository.ts`)
+
+- **Only** layer that imports `@/libs/prisma`.
+- One method ≈ one DB operation (find, create, update, delete).
+- No business logic, no HTTP errors — return plain data or `null`.
+- Accept typed inputs; do not parse/validate request bodies here.
+
+```ts
+import { prisma } from "@/libs/prisma";
+
+export async function findUserByEmail(email: string) {
+  return prisma.user.findUnique({ where: { email } });
+}
+```
+
+## Service (`<domain>.service.ts`)
+
+- All business logic: auth checks, orchestration, password hashing, side effects.
+- Import repositories — **never** `@/libs/prisma` directly.
+- Throw `AppError` from `@/libs/errors` for expected failures (404, 409, 403).
+- No `Request`/`Response`/`NextResponse` — keep services framework-agnostic.
+
+```ts
+import { AppError } from "@/libs/errors";
+import { findUserByEmail } from "./user.repository";
+
+export async function getUserByEmailOrThrow(email: string) {
+  const user = await findUserByEmail(email);
+  if (!user) throw new AppError("User not found", 404);
+  return user;
+}
+```
+
+## Schema (`<domain>.schema.ts`)
+
+- All input validation with **Zod**.
+- Export inferred types: `export type CreateUserInput = z.infer<typeof createUserSchema>`.
+- Validate at the API route / Server Action boundary — **not** inside services.
+- For form actions, export `FormState` type alongside schemas.
+
+## Types (`<domain>.types.ts`)
+
+- Server-only types not covered by Zod (DB row shapes, service return types).
+- Do **not** duplicate frontend API contracts — those live in `common/models/<domain>/` when shared with client.
+
+## API Route Handlers (`src/app/api/**/route.ts`)
+
+Thin controllers only:
+
+1. Parse body/params
+2. `schema.safeParse()` or `.parse()` in try/catch
+3. Call service
+4. Return response via `@/libs/auth/http` helpers
+
+```ts
+import { loginSchema } from "@/server/auth/auth.schema";
+import { loginUser } from "@/server/auth/auth.service";
+import { AppError } from "@/libs/errors";
+import { jsonError, jsonOk, zodErrorResponse } from "@/libs/auth/http";
+
+export async function POST(request: Request) {
+  try {
+    const input = loginSchema.parse(await request.json());
+    const result = await loginUser(input);
+    return jsonOk(result);
+  } catch (error) {
+    if (error instanceof ZodError) return zodErrorResponse(error);
+    if (error instanceof AppError) return jsonError(error.message, error.statusCode);
+    console.error("POST /api/auth/login failed", error);
+    return jsonError("Internal server error", 500);
+  }
+}
+```
+
+**Never** import `@/libs/prisma` in route handlers.
+
+## Shared Infrastructure
+
+| Path | Purpose |
+|------|---------|
+| `src/libs/prisma.ts` | Prisma singleton — import only from repositories |
+| `src/libs/errors.ts` | `AppError` class with `statusCode` |
+| `src/libs/auth/http.ts` | `jsonOk`, `jsonError`, `zodErrorResponse` |
+| `src/libs/auth/session.ts` | Cookie session helpers (infra — not domain logic) |
+| `src/libs/auth/password.ts` | bcrypt hash/verify |
+
+Auth session/password utilities stay in `src/libs/auth/` as cross-cutting infra. Domain-specific auth logic (login, register) belongs in `src/server/auth/`.
+
+## Prisma Rules
+
+- Schema: `prisma/schema.prisma` — generated client: `src/generated/prisma/` (do not edit).
+- After schema changes: `npm run db:generate` then `npm run db:migrate`.
+- Never edit migration SQL manually.
+
+## General Rules
+
+- Repositories and services must **not** be imported in Client Components.
+- Never expose raw Prisma errors or stack traces to clients.
+- Log unexpected errors server-side before returning sanitized messages.
+- Prefer named exports; keep files under ~200 lines.

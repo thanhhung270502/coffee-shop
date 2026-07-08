@@ -1,0 +1,219 @@
+---
+description: Module architecture conventions for feature modules in src/modules/ and shared data models in common/models/
+globs: src/modules/**/*.{ts,tsx},common/models/**/*.ts
+alwaysApply: false
+---
+
+# Module Architecture
+
+## `common/models/<domain>/` — Data Model Layer
+
+Each domain gets its own subdirectory with exactly two files + a barrel:
+
+```
+common/models/<domain>/
+├── index.ts                  # barrel: export * from both files
+├── <domain>-model.ts         # pure TypeScript types (no runtime code)
+└── <domain>-api-model.ts     # APIDefinition constants
+```
+
+### `<domain>-model.ts` rules
+- Only `interface`, `type`, and `enum` definitions — zero runtime code.
+- Enum names: `E` prefix (e.g., `EUserRole`, `EOrderState`).
+- DB row types suffixed `Row` (snake_case fields, raw DB shape).
+- API-facing object types suffixed `Object` (camelCase, sanitized).
+- Request/response pairs: `<Action>Request` / `<Action>Response`.
+- Nullable fields: `T | null`, not `T | undefined`.
+- Use `import type` for type-only imports.
+- Group with JSDoc section comments (e.g., `/** Login */`).
+
+```ts
+// ✅ GOOD
+export enum EOrderState { PENDING = "pending", COMPLETED = "completed" }
+
+export interface OrderRow { id: string; user_id: string; state: string }   // DB shape
+export interface OrderObject { id: string; userId: string; state: EOrderState } // API shape
+
+export interface CreateOrderRequest { ... }
+export interface CreateOrderResponse { order: OrderObject }
+```
+
+### `<domain>-api-model.ts` rules
+- Constants: `SCREAMING_SNAKE_CASE` prefixed with `API_` (e.g., `API_CREATE_ORDER`).
+- Every constant is typed as `APIDefinition`.
+- `requestBody` / `responseBody`: use `{} as T` — type carriers only, not real values.
+- `buildUrlPath`: always a function, even for static paths (enables future dynamic params).
+
+```ts
+// ✅ GOOD
+export const API_CREATE_ORDER: APIDefinition = {
+  method: APIMethod.POST,
+  baseUrl: APIBaseRoutes.ORDERS,
+  subUrl: "/create",
+  requestBody: {} as CreateOrderRequest,
+  responseBody: {} as CreateOrderResponse,
+  buildUrlPath: () => `${APIBaseRoutes.ORDERS}/create`,
+};
+```
+
+---
+
+## `src/modules/<module>/` — Feature Module Layer
+
+### Directory Structure
+
+```
+src/modules/<module>/
+├── index.ts          # public API: export hooks, layouts, pages, types only
+├── components/
+│   ├── index.ts      # barrel (internal use only — NOT re-exported by root)
+│   └── ...
+├── constants/
+│   └── index.ts
+├── hooks/
+│   ├── index.ts
+│   └── use-<name>.ts
+├── layouts/
+│   └── index.tsx
+├── pages/
+│   ├── index.ts
+│   └── <name>.page.tsx
+├── types/
+│   ├── index.ts
+│   └── <name>.ts
+└── utils/
+    └── index.ts
+```
+
+### Root `index.ts` — Public API
+Only export what consumers need. Components are internal.
+
+```ts
+// ✅ GOOD
+export * from "./hooks";
+export * from "./layouts";
+export * from "./pages";
+export * from "./types";
+
+// ❌ BAD — don't expose internal components
+// export * from "./components";
+```
+
+### File & Component Naming
+
+| Item | Convention | Example |
+|---|---|---|
+| Component files | `kebab-case.tsx` | `order-history.tsx` |
+| Page files | `kebab-case.page.tsx` | `order-history.page.tsx` |
+| Hook files | `use-kebab-case.ts` | `use-order-history.ts` |
+| Component names | `PascalCase` | `OrderHistory` |
+| Page component names | `PascalCase` + `Page` suffix | `OrderHistoryPage` |
+
+### Hooks (`hooks/use-<name>.ts`)
+- Always start with `"use client"`.
+- Co-locate Zod schema + inferred type + hook logic in one file.
+- Infer form types from schema: `type XFormData = z.infer<typeof xSchema>`.
+- Return pre-wrapped `onSubmit` (caller doesn't call `handleSubmit` themselves).
+- Export `ReturnType<typeof useX>` so form components can use it as prop type.
+
+```ts
+// ✅ GOOD
+"use client";
+
+export const orderSchema = z.object({ ... });
+export type OrderFormData = z.infer<typeof orderSchema>;
+
+export const useOrderForm = () => {
+  const methods = useForm<OrderFormData>({ resolver: zodResolver(orderSchema) });
+  const onSubmit = methods.handleSubmit(async (_data) => { ... });
+  return { methods, onSubmit, isSubmitting: methods.formState.isSubmitting };
+};
+export type UseOrderFormReturn = ReturnType<typeof useOrderForm>;
+```
+
+### Pages (`pages/<name>.page.tsx`)
+- Keep thin — delegate logic to components/hooks.
+- Use `"use client"` (or inherit from layout).
+- Handle loading + unauthenticated states at the page level.
+
+### Components
+- Set `displayName` on complex components.
+- Use `@phosphor-icons/react` for all icons.
+- Responsive: `useSmaller` / `useGreater` from `@/shared` for breakpoint checks.
+- Tailwind spacing: use brand tokens (`p-4xl`, `gap-2xl`) — no raw pixel values.
+
+### Shared Components — Always Prefer Over Native Elements
+
+Always use pre-built components from `@/shared/components` instead of raw HTML elements. Never reach for a native tag when a shared component exists.
+
+| Need | Use | Never use |
+|---|---|---|
+| Text / headings | `<Typography variant="..." />` | `<p>`, `<h1>`–`<h6>`, `<span>` (unstyled) |
+| Clickable actions | `<Button variant="..." size="..." />` | `<button>` |
+| Modal/overlay | `<Dialog>` + `<DialogContent>` + `<DialogTitle>` | Custom modal components |
+| Text input | `<Input />` | `<input>` |
+| Multiline input | `<Textarea />` | `<textarea>` |
+| Checkbox | `<Checkbox />` | `<input type="checkbox">` |
+| Dropdown | `<Select />` | `<select>` |
+| Tooltip | `<Tooltip />` | Custom tooltip implementations |
+| Popover | `<Popover />` | Custom popover implementations |
+| Badge | `<Badge />` | Custom badge spans |
+| Skeleton loader | `<Skeleton />` | Custom shimmer divs |
+| Tabs | `<Tabs />` | Custom tab implementations |
+| Separator | `<Separator />` | `<hr>` |
+| Slide-over panel | `<Sheet />` | Custom slide-over implementations |
+| Confirmation prompt | `<ConfirmationDialog />` | Custom confirm dialogs |
+
+**Typography variants**: `display-xlarge`, `display-large`, `heading-lg`, `heading-md`, `heading-sm`, `body-xl`, `body-lg`, `body-md`, `body-sm`, `body-xs`
+
+**Button variants**: `primary`, `secondary`, `gray`, `outlined-primary`, `outlined-secondary`, `outlined-gray`, `text-primary`, `text-secondary`, `text-gray`
+
+**Button sizes**: `xs`, `sm`, `md`, `lg`, `xl`
+
+```tsx
+// ✅ GOOD
+import { Typography } from "@/shared/components/typography";
+import { Button } from "@/shared/components/button";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/shared/components/dialog";
+
+<Typography variant="heading-md">Order Summary</Typography>
+<Typography variant="body-sm" color="secondary">Select your photos below</Typography>
+<Button variant="primary" size="md">Confirm Order</Button>
+<Button variant="outlined-secondary" size="sm" startIcon={PencilIcon}>Edit</Button>
+
+<Dialog>
+  <DialogTrigger>Open</DialogTrigger>
+  <DialogContent>
+    <DialogTitle>Confirm Delete</DialogTitle>
+    ...
+  </DialogContent>
+</Dialog>
+
+// ❌ BAD
+<h3 className="text-lg font-semibold">Order Summary</h3>
+<p className="text-sm text-gray-500">Select your photos below</p>
+<button className="bg-black text-white px-4 py-2">Confirm Order</button>
+```
+
+> When in doubt, check `src/shared/components/index.ts` for the full list of available components before creating anything new.
+
+### Forms
+Always follow this pattern:
+
+```
+Zod schema → z.infer type → useForm + zodResolver → FormProvider → RHFInput / RHFPassword / RHFCheckbox
+```
+
+### Barrel exports
+Every folder must have an `index.ts` using `export *`.
+
+```ts
+// hooks/index.ts
+export * from "./use-order-form";
+export * from "./use-order-history";
+```
+
+### Mutations & Queries
+- All API mutations/queries live in `@/shared` (e.g., `useLoginMutation`, `useQueryMe`).
+- Hooks in `src/modules/<module>/hooks/` consume them — never call `fetch` directly.
+- Mock data goes in `constants/index.ts` until real API is wired.

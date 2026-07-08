@@ -1,10 +1,10 @@
-import { deleteSession } from "@/libs/auth";
 import { jsonError, jsonOk } from "@/libs/auth/http";
+import { logoutUser } from "@/server/auth/auth.service";
 
 export async function POST() {
   try {
-    await deleteSession();
-    return jsonOk({ ok: true });
+    const result = await logoutUser();
+    return jsonOk(result);
   } catch (error) {
     console.error("POST /api/auth/logout failed", error);
     return jsonError("Internal server error", 500);

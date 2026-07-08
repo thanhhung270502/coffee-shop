@@ -1,43 +1,22 @@
 import { ZodError } from "zod";
 
-import {
-  createSession,
-  hashPassword,
-  registerSchema,
-  toPublicUser,
-} from "@/libs/auth";
 import { jsonError, jsonOk, zodErrorResponse } from "@/libs/auth/http";
-import { prisma } from "@/libs/prisma";
+import { AppError } from "@/libs/errors";
+import { registerSchema } from "@/server/auth/auth.schema";
+import { registerUser } from "@/server/auth/auth.service";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const input = registerSchema.parse(body);
-
-    const existing = await prisma.user.findUnique({
-      where: { email: input.email.toLowerCase() },
-    });
-
-    if (existing) {
-      return jsonError("Email is already registered", 409);
-    }
-
-    const passwordHash = await hashPassword(input.password);
-
-    const user = await prisma.user.create({
-      data: {
-        email: input.email.toLowerCase(),
-        passwordHash,
-        name: input.name,
-      },
-    });
-
-    await createSession(user.id);
-
-    return jsonOk({ user: toPublicUser(user) }, 201);
+    const input = registerSchema.parse(await request.json());
+    const result = await registerUser(input);
+    return jsonOk(result, 201);
   } catch (error) {
     if (error instanceof ZodError) {
       return zodErrorResponse(error);
+    }
+
+    if (error instanceof AppError) {
+      return jsonError(error.message, error.statusCode);
     }
 
     console.error("POST /api/auth/register failed", error);

@@ -1,16 +1,16 @@
-import { getSessionUser } from "@/libs/auth";
 import { jsonError, jsonOk } from "@/libs/auth/http";
+import { AppError } from "@/libs/errors";
+import { getCurrentUser } from "@/server/auth/auth.service";
 
 export async function GET() {
   try {
-    const user = await getSessionUser();
-
-    if (!user) {
-      return jsonError("Unauthorized", 401);
+    const result = await getCurrentUser();
+    return jsonOk(result);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return jsonError(error.message, error.statusCode);
     }
 
-    return jsonOk({ user });
-  } catch (error) {
     console.error("GET /api/auth/me failed", error);
     return jsonError("Internal server error", 500);
   }

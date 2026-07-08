@@ -12,6 +12,7 @@ import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 import globals from "globals";
 import pluginNext from "@next/eslint-plugin-next";
+import pluginReactHooks from "eslint-plugin-react-hooks";
 
 const baseConfig = [
   js.configs.recommended,
