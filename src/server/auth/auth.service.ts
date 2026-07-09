@@ -20,6 +20,10 @@ export async function loginUser(input: LoginInput): Promise<AuthUserResponse> {
     throw new AppError("Invalid email or password", 401);
   }
 
+  if (!user.isActive) {
+    throw new AppError("Account is disabled", 403);
+  }
+
   await createSession(user.id);
 
   return { user: toPublicUser(user) };
@@ -38,6 +42,7 @@ export async function registerUser(input: RegisterInput): Promise<AuthUserRespon
     email,
     passwordHash,
     name: input.name,
+    role: "CUSTOMER",
   });
 
   await createSession(user.id);

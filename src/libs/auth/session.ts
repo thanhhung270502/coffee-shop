@@ -11,13 +11,19 @@ import {
   SESSION_MAX_AGE_SECONDS,
 } from "./cookies";
 
-export type PublicUser = Pick<User, "id" | "email" | "name" | "createdAt" | "updatedAt">;
+export type PublicUser = Pick<
+  User,
+  "id" | "email" | "name" | "phone" | "role" | "isActive" | "createdAt" | "updatedAt"
+>;
 
 export function toPublicUser(user: User): PublicUser {
   return {
     id: user.id,
     email: user.email,
     name: user.name,
+    phone: user.phone,
+    role: user.role,
+    isActive: user.isActive,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -67,6 +73,12 @@ export async function getSessionUser(): Promise<PublicUser | null> {
   }
 
   if (session.expiresAt.getTime() <= Date.now()) {
+    await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined);
+    cookieStore.set(SESSION_COOKIE_NAME, "", getClearedSessionCookieOptions());
+    return null;
+  }
+
+  if (!session.user.isActive) {
     await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined);
     cookieStore.set(SESSION_COOKIE_NAME, "", getClearedSessionCookieOptions());
     return null;

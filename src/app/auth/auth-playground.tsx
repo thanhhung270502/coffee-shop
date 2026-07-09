@@ -6,6 +6,9 @@ type PublicUser = {
   id: string;
   email: string;
   name: string | null;
+  phone: string | null;
+  role: "ADMIN" | "STAFF" | "CUSTOMER";
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 };

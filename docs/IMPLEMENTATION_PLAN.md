@@ -51,7 +51,7 @@
 
 | Phase | Tên | Trạng thái | Tiến độ |
 |-------|-----|------------|---------|
-| 0 | Foundation | `[ ]` | 0/8 |
+| 0 | Foundation | `[x]` | 8/8 |
 | 1 | Admin | `[ ]` | 0/32 |
 | 2 | Customer | `[ ]` | 0/28 |
 | 3 | Staff (POS) | `[ ]` | 0/24 |
@@ -67,13 +67,13 @@
 
 ### 0.1 Database & Schema cơ bản
 
-- [ ] Thêm `Role` enum: `ADMIN`, `STAFF`, `CUSTOMER`
-- [ ] Mở rộng model `User`: `role`, `phone`, `isActive`
-- [ ] Thêm enums: `ProductType`, `OrderType`, `OrderChannel`, `OrderStatus`, `PaymentMethod`, `PaymentStatus`, `FulfillmentType`
-- [ ] Tạo models: `Category`, `Product`, `ProductVariant`, `Topping`, `ProductTopping`, `ProductSku`
-- [ ] Tạo models: `Order`, `OrderItem`, `OrderItemTopping`
-- [ ] Chạy migration + `prisma generate`
-- [ ] Tạo seed script: 1 admin, 1 staff, categories + products mẫu
+- [x] Thêm `Role` enum: `ADMIN`, `STAFF`, `CUSTOMER`
+- [x] Mở rộng model `User`: `role`, `phone`, `isActive`
+- [x] Thêm enums: `ProductType`, `OrderType`, `OrderChannel`, `OrderStatus`, `PaymentMethod`, `PaymentStatus`, `FulfillmentType`
+- [x] Tạo models: `Category`, `Product`, `ProductVariant`, `Topping`, `ProductTopping`, `ProductSku`
+- [x] Tạo models: `Order`, `OrderItem`, `OrderItemTopping`
+- [x] Chạy migration + `prisma generate`
+- [x] Tạo seed script: 1 admin, 1 staff, categories + products mẫu
 
 **Files cần tạo/sửa:**
 
@@ -85,27 +85,29 @@ package.json          # thêm script db:seed
 
 ### 0.2 Auth & RBAC
 
-- [ ] Cập nhật `PublicUser` + `toPublicUser` — trả về `role`
-- [ ] Tạo `requireAuth()` / `requireRole(roles[])` helper cho API routes
-- [ ] Tạo middleware hoặc layout guard cho `/admin/*` (ADMIN only)
-- [ ] Tạo layout guard cho `/pos/*` (ADMIN + STAFF) — chuẩn bị sẵn, dùng ở Phase 3
-- [ ] Cập nhật register: mặc định `CUSTOMER`; tạo staff chỉ qua admin
+- [x] Cập nhật `PublicUser` + `toPublicUser` — trả về `role`
+- [x] Tạo `requireAuth()` / `requireRole(roles[])` helper cho API routes
+- [x] Tạo layout guard cho `/admin/*` (ADMIN only) — dùng Server Component, không middleware
+- [x] Tạo layout guard cho `/pos/*` (ADMIN + STAFF) — chuẩn bị sẵn, dùng ở Phase 3
+- [x] Cập nhật register: mặc định `CUSTOMER`; tạo staff chỉ qua admin
 
 **Files:**
 
 ```
 src/libs/auth/session.ts
-src/libs/auth/guards.ts          # mới
-src/middleware.ts                # mới (nếu dùng middleware)
+src/libs/auth/guards.ts
+src/libs/auth/role-home.ts
+src/app/(admin)/admin/layout.tsx
+src/app/(pos)/pos/layout.tsx
 ```
 
 ### 0.3 Cấu trúc thư mục & shared
 
-- [ ] Tạo route groups: `(admin)`, `(customer)`, `(pos)`
-- [ ] Setup TanStack Query provider trong root layout
-- [ ] Tạo `src/features/` theo domain: `products`, `orders`, `categories`
-- [ ] Shared UI primitives cơ bản: Button, Input, Badge, Card, Table, Modal
-- [ ] Utility format tiền VND: `formatCurrency(35000)` → `35.000₫`
+- [x] Tạo route groups: `(admin)`, `(customer)`, `(pos)`
+- [x] Setup TanStack Query provider trong root layout
+- [x] Tạo `src/modules/` skeleton: `admin`, `customer`, `pos`
+- [x] Shared UI primitives cơ bản: Button, Input, Badge, Card, Table, Dialog
+- [x] Utility format tiền VND: `formatCurrency(35000)` → `35.000₫`
 
 **Files:**
 
@@ -113,17 +115,21 @@ src/middleware.ts                # mới (nếu dùng middleware)
 src/app/(admin)/admin/layout.tsx
 src/app/(customer)/layout.tsx
 src/app/(pos)/pos/layout.tsx
-src/features/
-src/shared/ui/
+src/modules/
+common/models/auth/
+src/shared/components/
+src/shared/providers/query-provider.tsx
+src/shared/mutations/
+src/shared/queries/
 src/shared/utils/currency.util.ts
 ```
 
 ### ✅ Definition of Done — Phase 0
 
-- [ ] Migration chạy thành công, seed có data mẫu
-- [ ] Login admin → truy cập `/admin` OK; customer → bị chặn
-- [ ] Prisma client generate không lỗi
-- [ ] `npm run check-types` pass
+- [x] Migration chạy thành công, seed có data mẫu
+- [x] Login admin → truy cập `/admin` OK; customer → bị chặn
+- [x] Prisma client generate không lỗi
+- [x] `npm run check-types` pass
 
 ---
 
@@ -665,14 +671,14 @@ PATCH  /api/pos/orders/[id]/status
 | Ngày | Phase | Ghi chú |
 |------|-------|---------|
 | 2026-07-08 | — | Tạo implementation plan |
-| | | |
+| 2026-07-08 | 0 | Hoàn thành Phase 0 — schema, seed, RBAC layout guards, modules scaffold, shared UI |
 | | | |
 
 ---
 
 ## Bước tiếp theo
 
-**Bắt đầu Phase 0** — mở rộng Prisma schema + RBAC + cấu trúc thư mục.
+**Bắt đầu Phase 1** — Admin shell & CRUD categories/drinks/products.
 
 ```bash
 # Khi sẵn sàng implement Phase 0:

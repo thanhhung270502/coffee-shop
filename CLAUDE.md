@@ -78,28 +78,14 @@ Next.js 16 · React 19 · Prisma · PostgreSQL (Neon) · Tailwind CSS · TanStac
 
 #### Models hiện tại
 
-```prisma
-model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  sessions     Session[]
-}
+Đã mở rộng ở Phase 0 — xem đầy đủ trong `prisma/schema.prisma` và [Data Model Reference](docs/IMPLEMENTATION_PLAN.md).
 
-model Session {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(...)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-```
+- `User` (+ `role`, `phone`, `isActive`), `Session`
+- Catalog: `Category`, `Product`, `ProductVariant`, `Topping`, `ProductTopping`, `ProductSku`
+- Orders: `Order`, `OrderItem`, `OrderItemTopping`
+- Enums: `Role`, `ProductType`, `OrderType`, `OrderChannel`, `OrderStatus`, `PaymentMethod`, `PaymentStatus`, `FulfillmentType`
 
-> **Planned (Phase 0):** `Role` enum (`ADMIN`, `STAFF`, `CUSTOMER`), `User.role`, RBAC guards, seed script.
+**Seed dev:** `npm run db:seed` — `admin@coffee.local` / `staff@coffee.local` (password: `Password123!`)
 
 
 
@@ -111,6 +97,8 @@ Session dùng opaque DB token trong `httpOnly` cookie (`session`) — không dù
 | File                        | Vai trò                                                                           |
 | --------------------------- | --------------------------------------------------------------------------------- |
 | `src/libs/auth/session.ts`  | `createSession`, `getSessionUser`, `deleteSession`, `toPublicUser`                |
+| `src/libs/auth/guards.ts`   | `requireAuth`, `requireRole`, `requireAuthOrRedirect`, `requireRoleOrRedirect`  |
+| `src/libs/auth/role-home.ts`| `getRoleHomePath` — redirect sau login theo role                                  |
 | `src/libs/auth/password.ts` | bcrypt hash/verify                                                                |
 | `src/libs/auth/cookies.ts`  | Cookie options                                                                    |
 | `src/libs/auth/http.ts`     | `jsonOk`, `jsonError`, `zodErrorResponse`                                         |
@@ -118,7 +106,7 @@ Session dùng opaque DB token trong `httpOnly` cookie (`session`) — không dù
 | `src/libs/errors.ts`        | `AppError` với `statusCode`                                                       |
 
 
-`PublicUser` = `Pick<User, "id" | "email" | "name" | "createdAt" | "updatedAt">`
+`PublicUser` = `Pick<User, "id" | "email" | "name" | "phone" | "role" | "isActive" | "createdAt" | "updatedAt">`
 
 ### API Routes hiện có
 
@@ -133,12 +121,12 @@ Session dùng opaque DB token trong `httpOnly` cookie (`session`) — không dù
 
 
 
-### Route Protection & RBAC (Planned)
+### Route Protection & RBAC
 
-> Chưa implement. Xem `docs/IMPLEMENTATION_PLAN.md` Phase 0.2.
+Layout guards (Server Component) — không dùng middleware:
 
-- `requireAuth()` / `requireRole(roles[])` trong `src/libs/auth/guards.ts`
-- Guards cho `/admin/*` (ADMIN), `/pos/*` (ADMIN + STAFF)
+- `requireAuth()` / `requireRole(roles[])` trong `src/libs/auth/guards.ts` — cho API routes
+- `requireRoleOrRedirect()` trong layout — `/admin/*` (ADMIN), `/pos/*` (ADMIN + STAFF)
 - Role home: `ADMIN` → `/admin`, `STAFF` → `/pos`, `CUSTOMER` → `/`
 
 

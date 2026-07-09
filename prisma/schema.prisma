@@ -9,14 +9,68 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum Role {
+  ADMIN
+  STAFF
+  CUSTOMER
+}
+
+enum ProductType {
+  DRINK
+  PACKAGED
+}
+
+enum OrderType {
+  DRINK_ORDER
+  PRODUCT_ORDER
+}
+
+enum OrderChannel {
+  ONLINE
+  POS
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  COD
+  VNPAY
+  MOMO
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+enum FulfillmentType {
+  DELIVERY
+  PICKUP
+}
+
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  sessions     Session[]
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  name            String?
+  phone           String?
+  role            Role      @default(CUSTOMER)
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  sessions        Session[]
+  orders          Order[]   @relation("CustomerOrders")
+  createdOrders   Order[]   @relation("StaffCreatedOrders")
 }
 
 model Session {
@@ -29,4 +83,122 @@ model Session {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+model Category {
+  id        String      @id @default(cuid())
+  name      String
+  slug      String      @unique
+  type      ProductType
+  sortOrder Int         @default(0)
+  isActive  Boolean     @default(true)
+  products  Product[]
+}
+
+model Product {
+  id          String           @id @default(cuid())
+  name        String
+  slug        String           @unique
+  type        ProductType
+  description String?
+  image       String?
+  isActive    Boolean          @default(true)
+  categoryId  String
+  category    Category         @relation(fields: [categoryId], references: [id])
+  variants    ProductVariant[]
+  toppings    ProductTopping[]
+  skus        ProductSku[]
+  orderItems  OrderItem[]
+
+  @@index([categoryId])
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  price     Int
+}
+
+model Topping {
+  id       String           @id @default(cuid())
+  name     String
+  price    Int
+  isActive Boolean          @default(true)
+  products ProductTopping[]
+}
+
+model ProductTopping {
+  productId String
+  toppingId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  topping   Topping @relation(fields: [toppingId], references: [id], onDelete: Cascade)
+
+  @@id([productId, toppingId])
+}
+
+model ProductSku {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  label     String
+  sku       String?
+  price     Int
+  stock     Int     @default(0)
+}
+
+model Order {
+  id              String           @id @default(cuid())
+  orderNumber     String           @unique
+  type            OrderType
+  channel         OrderChannel
+  status          OrderStatus      @default(PENDING)
+  paymentMethod   PaymentMethod?
+  paymentStatus   PaymentStatus    @default(PENDING)
+  customerName    String?
+  customerPhone   String?
+  userId          String?
+  user            User?            @relation("CustomerOrders", fields: [userId], references: [id])
+  createdById     String?
+  createdBy       User?            @relation("StaffCreatedOrders", fields: [createdById], references: [id])
+  fulfillment     FulfillmentType?
+  pickupTime      DateTime?
+  deliveryAddress String?
+  shippingAddress String?
+  note            String?
+  subtotal        Int
+  shippingFee     Int              @default(0)
+  discount        Int              @default(0)
+  total           Int
+  items           OrderItem[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([orderNumber])
+  @@index([status])
+}
+
+model OrderItem {
+  id         String             @id @default(cuid())
+  orderId    String
+  order      Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product            @relation(fields: [productId], references: [id])
+  variantId  String?
+  skuId      String?
+  quantity   Int
+  unitPrice  Int
+  note       String?
+  options    Json?
+  toppings   OrderItemTopping[]
+}
+
+model OrderItemTopping {
+  id          String    @id @default(cuid())
+  orderItemId String
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  toppingId   String
+  name        String
+  price       Int
 }

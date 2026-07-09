@@ -5,6 +5,7 @@ import type { GetParams, PostParams } from "@/shared/types";
 export const createAxios = (baseURL?: string) => {
   const axiosClient = axios.create({
     ...(baseURL ? { baseURL } : {}),
+    withCredentials: true,
     // https://github.com/axios/axios/issues/5058#issuecomment-1272107602
     // Example: Params { a: ['b', 'c']}
     // From (by default - false) 'a[]=b&a[]=c'
@@ -26,8 +27,8 @@ export const createAxios = (baseURL?: string) => {
     return response.data;
   };
 
-  const postRequest = <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
-    return axiosClient.post(path, data, {
+  const postRequest = async <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
+    const response = await axiosClient.post(path, data, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -36,6 +37,7 @@ export const createAxios = (baseURL?: string) => {
       params,
       ...config,
     });
+    return response.data;
   };
 
   const putRequest = <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
