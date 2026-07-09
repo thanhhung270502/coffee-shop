@@ -118,6 +118,102 @@ async function seedDrinks() {
       ],
       toppingNames: ["Boba Pearls", "Cream Cheese"],
     },
+    {
+      name: "Espresso",
+      slug: "espresso",
+      categoryId: coffeeCategory.id,
+      description: "Single shot espresso",
+      variants: [{ name: "S", price: 20000 }],
+      toppingNames: [],
+    },
+    {
+      name: "Americano",
+      slug: "americano",
+      categoryId: coffeeCategory.id,
+      description: "Espresso with hot water",
+      variants: [
+        { name: "M", price: 28000 },
+        { name: "L", price: 32000 },
+      ],
+      toppingNames: [],
+    },
+    {
+      name: "Cappuccino",
+      slug: "cappuccino",
+      categoryId: coffeeCategory.id,
+      description: "Espresso with steamed milk foam",
+      variants: [
+        { name: "M", price: 35000 },
+        { name: "L", price: 40000 },
+      ],
+      toppingNames: ["Cream Cheese"],
+    },
+    {
+      name: "Latte",
+      slug: "latte",
+      categoryId: coffeeCategory.id,
+      description: "Espresso with steamed milk",
+      variants: [
+        { name: "M", price: 38000 },
+        { name: "L", price: 43000 },
+      ],
+      toppingNames: ["Cream Cheese"],
+    },
+    {
+      name: "Matcha Latte",
+      slug: "matcha-latte",
+      categoryId: teaCategory.id,
+      description: "Japanese matcha with milk",
+      variants: [
+        { name: "M", price: 40000 },
+        { name: "L", price: 45000 },
+      ],
+      toppingNames: ["Boba Pearls"],
+    },
+    {
+      name: "Peach Tea",
+      slug: "tra-dao",
+      categoryId: teaCategory.id,
+      description: "Refreshing peach iced tea",
+      variants: [
+        { name: "M", price: 30000 },
+        { name: "L", price: 35000 },
+      ],
+      toppingNames: ["Boba Pearls"],
+    },
+    {
+      name: "Lemon Tea",
+      slug: "tra-chanh",
+      categoryId: teaCategory.id,
+      description: "Vietnamese lemon tea",
+      variants: [
+        { name: "M", price: 25000 },
+        { name: "L", price: 30000 },
+      ],
+      toppingNames: [],
+    },
+    {
+      name: "Coconut Coffee",
+      slug: "ca-phe-cot-dua",
+      categoryId: coffeeCategory.id,
+      description: "Coffee with coconut milk",
+      variants: [
+        { name: "M", price: 35000 },
+        { name: "L", price: 40000 },
+      ],
+      toppingNames: ["Boba Pearls"],
+    },
+    {
+      name: "Salt Coffee",
+      slug: "ca-phe-muoi",
+      categoryId: coffeeCategory.id,
+      description: "Hue-style salted cream coffee",
+      variants: [
+        { name: "M", price: 38000 },
+        { name: "L", price: 43000 },
+      ],
+      toppingNames: [],
+    },
   ];
 
   for (const drink of drinks) {
@@ -180,6 +276,36 @@ async function seedPackagedProducts() {
         { label: "500g", sku: "ROB-500", price: 170000, stock: 8 },
       ],
     },
+    {
+      name: "Whole Bean Arabica",
+      slug: "hat-arabica-nguyen-chat",
+      description: "Unroasted Arabica whole beans",
+      skus: [
+        { label: "500g", sku: "ARA-WB-500", price: 180000, stock: 12 },
+        { label: "1kg", sku: "ARA-WB-1000", price: 340000, stock: 6 },
+      ],
+    },
+    {
+      name: "Drip Bag Coffee",
+      slug: "ca-phe-tui-loc",
+      description: "Convenient drip bag packs",
+      skus: [{ label: "10 bags", sku: "DRIP-10", price: 85000, stock: 30 }],
+    },
+    {
+      name: "Instant Coffee Mix",
+      slug: "ca-phe-hoa-tan",
+      description: "3-in-1 instant coffee mix",
+      skus: [
+        { label: "20 sachets", sku: "INST-20", price: 65000, stock: 25 },
+        { label: "40 sachets", sku: "INST-40", price: 120000, stock: 15 },
+      ],
+    },
+    {
+      name: "Oolong Tea Leaves",
+      slug: "tra-oolong",
+      description: "Premium Taiwanese oolong",
+      skus: [{ label: "100g", sku: "OOL-100", price: 95000, stock: 18 }],
+    },
   ];
 
   for (const item of products) {
@@ -214,12 +340,102 @@ async function seedPackagedProducts() {
   }
 }
 
+async function seedShopSettings() {
+  await prisma.shopSettings.upsert({
+    where: { id: "default" },
+    update: {
+      shopName: "Coffee Shop",
+      address: "123 Nguyen Hue, District 1, HCMC",
+      phone: "0901234567",
+      openTime: "07:00",
+      closeTime: "22:00",
+      baseShipping: 15000,
+    },
+    create: {
+      id: "default",
+      shopName: "Coffee Shop",
+      address: "123 Nguyen Hue, District 1, HCMC",
+      phone: "0901234567",
+      openTime: "07:00",
+      closeTime: "22:00",
+      baseShipping: 15000,
+    },
+  });
+}
+
+async function seedSampleOrders() {
+  const drink = await prisma.product.findFirst({ where: { type: ProductType.DRINK } });
+  const packaged = await prisma.product.findFirst({
+    where: { type: ProductType.PACKAGED },
+    include: { skus: true },
+  });
+
+  if (drink) {
+    const variant = await prisma.productVariant.findFirst({ where: { productId: drink.id } });
+    if (variant) {
+      await prisma.order.upsert({
+        where: { orderNumber: "#001" },
+        update: {},
+        create: {
+          orderNumber: "#001",
+          type: "DRINK_ORDER",
+          channel: "ONLINE",
+          status: "PENDING",
+          customerName: "Nguyen Van A",
+          customerPhone: "0901111111",
+          fulfillment: "PICKUP",
+          subtotal: variant.price,
+          total: variant.price,
+          items: {
+            create: {
+              productId: drink.id,
+              variantId: variant.id,
+              quantity: 1,
+              unitPrice: variant.price,
+            },
+          },
+        },
+      });
+    }
+  }
+
+  if (packaged && packaged.skus[0]) {
+    const sku = packaged.skus[0];
+    await prisma.order.upsert({
+      where: { orderNumber: "#002" },
+      update: {},
+      create: {
+        orderNumber: "#002",
+        type: "PRODUCT_ORDER",
+        channel: "ONLINE",
+        status: "PENDING",
+        customerName: "Tran Thi B",
+        customerPhone: "0902222222",
+        shippingAddress: "456 Le Loi, District 3, HCMC",
+        subtotal: sku.price,
+        shippingFee: 15000,
+        total: sku.price + 15000,
+        items: {
+          create: {
+            productId: packaged.id,
+            skuId: sku.id,
+            quantity: 1,
+            unitPrice: sku.price,
+          },
+        },
+      },
+    });
+  }
+}
+
 async function main() {
   await seedUsers();
   await seedCategories();
   await seedToppings();
   await seedDrinks();
   await seedPackagedProducts();
+  await seedShopSettings();
+  await seedSampleOrders();
   console.log("Seed completed successfully.");
 }
 

@@ -63,6 +63,35 @@ Next.js 16 · React 19 · Prisma · PostgreSQL (Neon) · Tailwind CSS · TanStac
 - Co-locate types near usage; move to shared only when reused.
 - Explicit return types for public/exported functions.
 
+## Language & Copy
+
+**All user-facing text in code must be English.** Planning docs (e.g. `docs/IMPLEMENTATION_PLAN.md`) may stay Vietnamese — that does not apply to the app.
+
+| Scope | Language | Examples |
+| ----- | -------- | -------- |
+| UI labels, buttons, nav, table headers | English | `Add Category`, `Edit`, `Cancel`, `Active` |
+| Page titles & descriptions | English | `Categories`, `Manage drink menu` |
+| Empty / loading states | English | `No orders yet`, `Loading...` |
+| `confirm()` / `prompt()` dialogs | English | `Delete this category?` |
+| Zod `.min()` / custom validation messages | English | `"Category name is required"` |
+| `AppError` messages (returned to client) | English | `"Category not found"` |
+| `aria-label`, tooltips, badge text | English | `Expand sidebar` |
+
+```ts
+// ✅ GOOD
+throw new AppError("Category not found", 404);
+name: z.string().min(1, "Category name is required"),
+<Button>Edit</Button>
+if (!confirm("Delete this category?")) return;
+
+// ❌ BAD — Vietnamese in user-facing strings
+throw new AppError("Danh mục không tồn tại", 404);
+<Button>Sửa</Button>
+if (!confirm("Xóa danh mục này?")) return;
+```
+
+Applies to: `src/modules/**`, `src/shared/components/**`, `src/server/**` (schemas + services), `src/app/**` (pages with UI).
+
 ## Code Quality
 
 - Run `npm run lint` before committing.

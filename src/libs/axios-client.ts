@@ -51,8 +51,8 @@ export const createAxios = (baseURL?: string) => {
     });
   };
 
-  const patchRequest = <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
-    return axiosClient.patch(path, data, {
+  const patchRequest = async <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
+    const response = await axiosClient.patch(path, data, {
       headers: {
         Accept: "application/json",
         ...customHeader,
@@ -60,10 +60,11 @@ export const createAxios = (baseURL?: string) => {
       params,
       ...config,
     });
+    return response.data;
   };
 
-  const delRequest = <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
-    return axiosClient.delete(path, {
+  const delRequest = async <T>({ path, config, customHeader, data, params }: PostParams<T>) => {
+    const response = await axiosClient.delete(path, {
       headers: {
         Accept: "application/json",
         ...customHeader,
@@ -72,6 +73,7 @@ export const createAxios = (baseURL?: string) => {
       ...(data ? { data } : {}),
       ...config,
     });
+    return response.data;
   };
 
   return {

@@ -40,6 +40,7 @@ export async function findUserByEmail(email: string) {
 - All business logic: auth checks, orchestration, password hashing, side effects.
 - Import repositories — **never** `@/libs/prisma` directly.
 - Throw `AppError` from `@/libs/errors` for expected failures (404, 409, 403).
+- **`AppError` messages must be English** — they are returned to the client.
 - No `Request`/`Response`/`NextResponse` — keep services framework-agnostic.
 
 ```ts
@@ -59,6 +60,7 @@ export async function getUserByEmailOrThrow(email: string) {
 - Export inferred types: `export type CreateUserInput = z.infer<typeof createUserSchema>`.
 - Validate at the API route / Server Action boundary — **not** inside services.
 - For form actions, export `FormState` type alongside schemas.
+- **Validation messages must be English** — they are returned to the client via `zodErrorResponse`.
 
 ## Types (`<domain>.types.ts`)
 

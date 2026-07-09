@@ -135,6 +135,7 @@ export type UseOrderFormReturn = ReturnType<typeof useOrderForm>;
 - Keep thin — delegate logic to components/hooks.
 - Use `"use client"` (or inherit from layout).
 - Handle loading + unauthenticated states at the page level.
+- **All UI copy must be English** — labels, buttons, titles, empty states, `confirm()`/`prompt()` text.
 
 ### Components
 - Set `displayName` on complex components.
@@ -189,10 +190,10 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/shared/comp
   </DialogContent>
 </Dialog>
 
-// ❌ BAD
-<h3 className="text-lg font-semibold">Order Summary</h3>
-<p className="text-sm text-gray-500">Select your photos below</p>
-<button className="bg-black text-white px-4 py-2">Confirm Order</button>
+// ❌ BAD — native HTML or Vietnamese copy
+<h3 className="text-lg font-semibold">Tổng quan đơn hàng</h3>
+<p className="text-sm text-gray-500">Chọn sản phẩm bên dưới</p>
+<button className="bg-black text-white px-4 py-2">Thêm mới</button>
 ```
 
 > When in doubt, check `src/shared/components/index.ts` for the full list of available components before creating anything new.
