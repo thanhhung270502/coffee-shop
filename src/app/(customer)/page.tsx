@@ -17,7 +17,7 @@ export default function HomePage() {
             Coffee Shop
           </h1>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Đặt nước online hoặc mua sản phẩm đóng gói — Phase 2 sẽ có menu đầy đủ.
+            Order drinks online or buy packaged products — full menu coming in Phase 2.
           </p>
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">

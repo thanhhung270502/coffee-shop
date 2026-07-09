@@ -45,9 +45,9 @@ async function seedUsers() {
 
 async function seedCategories() {
   const categories = [
-    { name: "Cà phê", slug: "ca-phe", type: ProductType.DRINK, sortOrder: 1 },
-    { name: "Trà", slug: "tra", type: ProductType.DRINK, sortOrder: 2 },
-    { name: "Hạt cà phê", slug: "hat-ca-phe", type: ProductType.PACKAGED, sortOrder: 1 },
+    { name: "Coffee", slug: "ca-phe", type: ProductType.DRINK, sortOrder: 1 },
+    { name: "Tea", slug: "tra", type: ProductType.DRINK, sortOrder: 2 },
+    { name: "Coffee Beans", slug: "hat-ca-phe", type: ProductType.PACKAGED, sortOrder: 1 },
   ];
 
   for (const category of categories) {
@@ -61,8 +61,8 @@ async function seedCategories() {
 
 async function seedToppings() {
   const toppings = [
-    { name: "Trân châu", price: 5000 },
-    { name: "Kem cheese", price: 8000 },
+    { name: "Boba Pearls", price: 5000 },
+    { name: "Cream Cheese", price: 8000 },
   ];
 
   for (const topping of toppings) {
@@ -84,39 +84,39 @@ async function seedDrinks() {
 
   const drinks = [
     {
-      name: "Cà phê sữa đá",
+      name: "Vietnamese Iced Coffee",
       slug: "ca-phe-sua-da",
       categoryId: coffeeCategory.id,
-      description: "Cà phê phin truyền thống với sữa đặc",
+      description: "Traditional phin coffee with condensed milk",
       variants: [
         { name: "S", price: 25000 },
         { name: "M", price: 30000 },
         { name: "L", price: 35000 },
       ],
-      toppingNames: ["Trân châu", "Kem cheese"],
+      toppingNames: ["Boba Pearls", "Cream Cheese"],
     },
     {
-      name: "Bạc xỉu",
+      name: "Bac Xiu",
       slug: "bac-xiu",
       categoryId: coffeeCategory.id,
-      description: "Nhiều sữa, ít cà phê",
+      description: "More milk, less coffee",
       variants: [
         { name: "S", price: 28000 },
         { name: "M", price: 33000 },
         { name: "L", price: 38000 },
       ],
-      toppingNames: ["Trân châu"],
+      toppingNames: ["Boba Pearls"],
     },
     {
-      name: "Trà sữa trân châu",
+      name: "Boba Milk Tea",
       slug: "tra-sua-tran-chau",
       categoryId: teaCategory.id,
-      description: "Trà sữa Đài Loan",
+      description: "Taiwanese-style milk tea",
       variants: [
         { name: "M", price: 35000 },
         { name: "L", price: 40000 },
       ],
-      toppingNames: ["Trân châu", "Kem cheese"],
+      toppingNames: ["Boba Pearls", "Cream Cheese"],
     },
   ];
 
@@ -163,18 +163,18 @@ async function seedPackagedProducts() {
 
   const products = [
     {
-      name: "Cà phê Arabica rang xay",
+      name: "Ground Arabica Coffee",
       slug: "ca-phe-arabica-rang-xay",
-      description: "Hạt Arabica rang medium",
+      description: "Medium-roast Arabica beans",
       skus: [
         { label: "250g", sku: "ARA-250", price: 120000, stock: 20 },
         { label: "500g", sku: "ARA-500", price: 220000, stock: 10 },
       ],
     },
     {
-      name: "Cà phê Robusta rang xay",
+      name: "Ground Robusta Coffee",
       slug: "ca-phe-robusta-rang-xay",
-      description: "Hạt Robusta đậm vị",
+      description: "Bold Robusta beans",
       skus: [
         { label: "250g", sku: "ROB-250", price: 90000, stock: 15 },
         { label: "500g", sku: "ROB-500", price: 170000, stock: 8 },
