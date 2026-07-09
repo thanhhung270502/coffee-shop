@@ -68,15 +68,19 @@ export function AdminProductsPage() {
       {
         id: "skus",
         header: "SKUs",
-        cell: ({ row }) =>
-          row.original.skus.map((s) => `${s.label}: ${s.stock}`).join(", "),
+        cell: ({ row }) => row.original.skus.map((s) => `${s.label}: ${s.stock}`).join(", "),
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <Button variant="tertiary-gray" size="sm" startIcon={Edit2} onClick={() => openEdit(row.original)}>
+            <Button
+              variant="tertiary-gray"
+              size="sm"
+              startIcon={Edit2}
+              onClick={() => openEdit(row.original)}
+            >
               Edit
             </Button>
             {row.original.skus[0] && (
@@ -100,7 +104,7 @@ export function AdminProductsPage() {
         ),
       },
     ],
-    [stockMutation],
+    [stockMutation]
   );
 
   const openCreate = () => {
@@ -167,49 +171,85 @@ export function AdminProductsPage() {
                 </Button>
               }
             />
-            <DialogContent className="!w-full max-w-lg">
+            <DialogContent className="w-full! max-w-lg">
               <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-6">
                 <DialogTitle>{editing ? "Edit Product" : "Add Product"}</DialogTitle>
-                <Input label="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+                <Input
+                  label="Name"
+                  value={form.name}
+                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                />
                 <div>
-                  <Typography variant="body-sm" className="mb-1">Category</Typography>
+                  <Typography variant="body-sm" className="mb-1">
+                    Category
+                  </Typography>
                   <select
-                    className="w-full rounded-lg border border-primary px-3 py-2 text-sm"
+                    className="border-primary w-full rounded-lg border px-3 py-2 text-sm"
                     value={form.categoryId}
                     onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))}
                   >
                     {categories?.categories.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
                     ))}
                   </select>
                 </div>
-                <Input label="Description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
+                <Input
+                  label="Description"
+                  value={form.description}
+                  onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                />
                 {form.skus.map((s, i) => (
                   <div key={i} className="grid grid-cols-2 gap-2">
-                    <Input placeholder="Label (250g)" value={s.label} onChange={(e) => {
-                      const skus = [...form.skus];
-                      skus[i] = { ...skus[i], label: e.target.value };
-                      setForm((p) => ({ ...p, skus }));
-                    }} />
-                    <Input placeholder="SKU code" value={s.sku} onChange={(e) => {
-                      const skus = [...form.skus];
-                      skus[i] = { ...skus[i], sku: e.target.value };
-                      setForm((p) => ({ ...p, skus }));
-                    }} />
-                    <Input placeholder="Price" type="number" value={s.price} onChange={(e) => {
-                      const skus = [...form.skus];
-                      skus[i] = { ...skus[i], price: e.target.value };
-                      setForm((p) => ({ ...p, skus }));
-                    }} />
-                    <Input placeholder="Stock" type="number" value={s.stock} onChange={(e) => {
-                      const skus = [...form.skus];
-                      skus[i] = { ...skus[i], stock: e.target.value };
-                      setForm((p) => ({ ...p, skus }));
-                    }} />
+                    <Input
+                      placeholder="Label (250g)"
+                      value={s.label}
+                      onChange={(e) => {
+                        const skus = [...form.skus];
+                        skus[i] = { ...skus[i], label: e.target.value };
+                        setForm((p) => ({ ...p, skus }));
+                      }}
+                    />
+                    <Input
+                      placeholder="SKU code"
+                      value={s.sku}
+                      onChange={(e) => {
+                        const skus = [...form.skus];
+                        skus[i] = { ...skus[i], sku: e.target.value };
+                        setForm((p) => ({ ...p, skus }));
+                      }}
+                    />
+                    <Input
+                      placeholder="Price"
+                      type="number"
+                      value={s.price}
+                      onChange={(e) => {
+                        const skus = [...form.skus];
+                        skus[i] = { ...skus[i], price: e.target.value };
+                        setForm((p) => ({ ...p, skus }));
+                      }}
+                    />
+                    <Input
+                      placeholder="Stock"
+                      type="number"
+                      value={s.stock}
+                      onChange={(e) => {
+                        const skus = [...form.skus];
+                        skus[i] = { ...skus[i], stock: e.target.value };
+                        setForm((p) => ({ ...p, skus }));
+                      }}
+                    />
                   </div>
                 ))}
                 <div className="flex justify-end gap-2">
-                  <DialogClose render={<Button variant="secondary-gray" size="sm">Cancel</Button>} />
+                  <DialogClose
+                    render={
+                      <Button variant="secondary-gray" size="sm">
+                        Cancel
+                      </Button>
+                    }
+                  />
                   <Button variant="primary" size="sm" onClick={handleSubmit} disabled={!form.name}>
                     {editing ? "Update" : "Create"}
                   </Button>
@@ -220,12 +260,16 @@ export function AdminProductsPage() {
         }
       />
 
-      <div className="rounded-xl border border-primary bg-white p-4">
+      <div className="border-primary rounded-xl border bg-white p-4">
         <Table
           data={data?.products ?? []}
           columns={columns}
           isLoading={isLoading}
-          emptyState={<Typography variant="body-sm" color="secondary">No products yet</Typography>}
+          emptyState={
+            <Typography variant="body-sm" color="secondary">
+              No products yet
+            </Typography>
+          }
         />
       </div>
     </div>

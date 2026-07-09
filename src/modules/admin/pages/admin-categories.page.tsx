@@ -54,7 +54,7 @@ export function AdminCategoriesPage() {
       if (!confirm("Delete this category?")) return;
       await deleteMutation.mutateAsync(id);
     },
-    [deleteMutation],
+    [deleteMutation]
   );
 
   const columns = useMemo<ColumnDef<CategoryObject>[]>(
@@ -101,7 +101,7 @@ export function AdminCategoriesPage() {
         ),
       },
     ],
-    [deleteMutation, handleDelete],
+    [deleteMutation, handleDelete]
   );
 
   const openCreate = () => {
@@ -151,7 +151,7 @@ export function AdminCategoriesPage() {
                 </Button>
               }
             />
-            <DialogContent className="!w-full max-w-md">
+            <DialogContent className="w-full! max-w-md">
               <div className="flex flex-col gap-4 p-6">
                 <DialogTitle>{editing ? "Edit Category" : "Add Category"}</DialogTitle>
                 <Input
@@ -198,7 +198,7 @@ export function AdminCategoriesPage() {
               "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               activeTab === tab.type
                 ? "bg-brand-primary text-brand-tertiary"
-                : "bg-white text-secondary hover:bg-secondary-hover",
+                : "text-secondary hover:bg-secondary-hover bg-white"
             )}
           >
             {tab.label}
@@ -206,7 +206,7 @@ export function AdminCategoriesPage() {
         ))}
       </div>
 
-      <div className="rounded-xl border border-primary bg-white p-4">
+      <div className="border-primary rounded-xl border bg-white p-4">
         <Table
           data={data?.categories ?? []}
           columns={columns}

@@ -98,7 +98,12 @@ export function AdminDrinksPage() {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <Button variant="tertiary-gray" size="sm" startIcon={Edit2} onClick={() => openEdit(row.original)}>
+            <Button
+              variant="tertiary-gray"
+              size="sm"
+              startIcon={Edit2}
+              onClick={() => openEdit(row.original)}
+            >
               Edit
             </Button>
             <Button
@@ -117,7 +122,7 @@ export function AdminDrinksPage() {
         ),
       },
     ],
-    [statusMutation],
+    [statusMutation]
   );
 
   const openCreate = () => {
@@ -188,16 +193,20 @@ export function AdminDrinksPage() {
                 </Button>
               }
             />
-            <DialogContent className="!w-full max-w-lg">
+            <DialogContent className="w-full! max-w-lg">
               <div className="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-6">
                 <DialogTitle>{editing ? "Edit Drink" : "Add Drink"}</DialogTitle>
-                <Input label="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
+                <Input
+                  label="Name"
+                  value={form.name}
+                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                />
                 <div>
                   <Typography variant="body-sm" className="mb-1">
                     Category
                   </Typography>
                   <select
-                    className="w-full rounded-lg border border-primary px-3 py-2 text-sm"
+                    className="border-primary w-full rounded-lg border px-3 py-2 text-sm"
                     value={form.categoryId}
                     onChange={(e) => setForm((p) => ({ ...p, categoryId: e.target.value }))}
                   >
@@ -271,8 +280,19 @@ export function AdminDrinksPage() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <DialogClose render={<Button variant="secondary-gray" size="sm">Cancel</Button>} />
-                  <Button variant="primary" size="sm" onClick={handleSubmit} disabled={!form.name || isSubmitting}>
+                  <DialogClose
+                    render={
+                      <Button variant="secondary-gray" size="sm">
+                        Cancel
+                      </Button>
+                    }
+                  />
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={handleSubmit}
+                    disabled={!form.name || isSubmitting}
+                  >
                     {editing ? "Update" : "Create"}
                   </Button>
                 </div>
@@ -282,7 +302,7 @@ export function AdminDrinksPage() {
         }
       />
 
-      <div className="mb-6 rounded-xl border border-primary bg-white p-4">
+      <div className="border-primary mb-6 rounded-xl border bg-white p-4">
         <Typography variant="heading-sm" weight="semibold" className="mb-3">
           Manage Toppings
         </Typography>
@@ -309,13 +329,15 @@ export function AdminDrinksPage() {
               <button
                 type="button"
                 className="ml--2 text-xs underline"
-                onClick={() => updateToppingMutation.mutate({ id: t.id, data: { isActive: !t.isActive } })}
+                onClick={() =>
+                  updateToppingMutation.mutate({ id: t.id, data: { isActive: !t.isActive } })
+                }
               >
                 {t.isActive ? "Disable" : "Enable"}
               </button>
               <button
                 type="button"
-                className="ml-1 text-xs text-error-primary underline"
+                className="text-error-primary ml-1 text-xs underline"
                 onClick={() => deleteToppingMutation.mutate(t.id)}
               >
                 Delete
@@ -325,12 +347,16 @@ export function AdminDrinksPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-primary bg-white p-4">
+      <div className="border-primary rounded-xl border bg-white p-4">
         <Table
           data={data?.drinks ?? []}
           columns={columns}
           isLoading={isLoading}
-          emptyState={<Typography variant="body-sm" color="secondary">No drinks yet</Typography>}
+          emptyState={
+            <Typography variant="body-sm" color="secondary">
+              No drinks yet
+            </Typography>
+          }
         />
       </div>
     </div>

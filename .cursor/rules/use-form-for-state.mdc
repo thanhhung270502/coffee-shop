@@ -1,0 +1,120 @@
+---
+description: Use useForm + Zod for features with multiple managed state fields
+globs: src/**/*.tsx, src/**/*.ts
+alwaysApply: false
+---
+
+# useForm for Multi-State Features
+
+When a feature or component manages 2+ input states (text, checkbox, select, etc.), use `useForm` from React Hook Form with Zod validation instead of multiple `useState` calls.
+
+Reference: `src/modules/auth/hooks/use-signup.ts` and `src/modules/auth/components/signup/signup-form.tsx`.
+
+## When to Use
+
+- 2+ related input fields that are submitted together
+- Fields need validation (required, format, min/max)
+- Form needs reset after submit or on dialog close
+
+## When NOT to Use
+
+- Single boolean toggle or one-off UI state (use `useState`)
+- Server state (use TanStack React Query)
+- Global app state (use Jotai atoms)
+
+## Required Structure
+
+### 1. Custom hook (`use-xxx.ts`)
+
+```ts
+export const xxxSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export type XxxFormData = z.infer<typeof xxxSchema>;
+
+export const useXxx = () => {
+  const methods = useForm<XxxFormData>({
+    resolver: zodResolver(xxxSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = methods.handleSubmit(async (values) => {
+    try {
+      // call mutation / API
+      methods.reset();
+    } catch (error) {
+      logger.error(asError(error).message);
+    }
+  });
+
+  return {
+    methods,
+    onSubmit,
+    isSubmitting: methods.formState.isSubmitting,
+  };
+};
+
+export type UseXxxReturn = ReturnType<typeof useXxx>;
+```
+
+### 2. Form component (`xxx-form.tsx`)
+
+```tsx
+type XxxFormProps = UseXxxReturn;
+
+export const XxxForm = ({ methods, onSubmit, isSubmitting }: XxxFormProps) => (
+  <FormProvider formMethods={methods} onSubmit={onSubmit}>
+    <RHFInput name="email" control={methods.control} label="Email" required />
+    <RHFPassword name="password" control={methods.control} label="Password" required />
+    <Button type="submit" loading={isSubmitting}>Submit</Button>
+  </FormProvider>
+);
+```
+
+### 3. Container component (dialog/page)
+
+Container owns UI state (open/close, navigation). Form state lives in the custom hook.
+
+```tsx
+export const XxxDialog = () => {
+  const { methods, onSubmit, isSubmitting, open, setOpen } = useXxx();
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent>
+        <XxxForm methods={methods} onSubmit={onSubmit} isSubmitting={isSubmitting} />
+      </DialogContent>
+    </Dialog>
+  );
+};
+```
+
+## Rules
+
+- Define Zod schema and infer type with `z.infer<typeof xxxSchema>`
+- Always set `defaultValues` matching every schema field
+- Use `zodResolver` for validation — do not validate manually in `onSubmit`
+- Export `UseXxxReturn = ReturnType<typeof useXxx>` for form component props
+- Use shared `FormProvider` and `RHF*` components from `@/shared`
+- Pass `control={methods.control}` to every RHF field
+- Use `methods.formState.isSubmitting` for loading state, not a separate `useState`
+- Call `methods.reset()` after successful submit
+
+## Anti-patterns
+
+```tsx
+// BAD — multiple useState for form fields
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [loading, setLoading] = useState(false);
+
+// BAD — validation logic inside onSubmit
+const onSubmit = () => {
+  if (!email.includes("@")) setError("Invalid email");
+};
+
+// BAD — raw <input> instead of RHF components
+<input value={email} onChange={(e) => setEmail(e.target.value)} />
+```

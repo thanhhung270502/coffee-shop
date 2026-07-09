@@ -120,8 +120,8 @@ export const addOnTextVariants = cva(
         destructive: "text-tertiary",
       },
       size: {
-        sm: "px-lg py-lg body-md",
-        md: "px-[0.875rem] py-xl body-lg",
+        sm: "px-lg py-lg body-sm",
+        md: "px-[0.875rem] py-xl body-md",
       },
     },
     defaultVariants: {
@@ -163,8 +163,8 @@ const textInputAreaVariants = cva(
 export const inputVariants = cva(["w-full bg-transparent border-0 outline-none"], {
   variants: {
     size: {
-      sm: ["body-md"],
-      md: ["body-lg"],
+      sm: ["body-sm"],
+      md: ["body-md"],
     },
     variant: {
       default: ["placeholder:text-quaternary", "text-primary"],
@@ -258,9 +258,9 @@ export const elementVariants = cva(["flex items-center justify-center"], {
   },
 });
 
-export const labelVariants = cva(["body-md font-medium text-secondary"]);
+export const labelVariants = cva(["body-sm font-medium text-secondary"]);
 
-export const helperTextVariants = cva(["body-md"], {
+export const helperTextVariants = cva(["body-sm"], {
   variants: {
     variant: {
       default: "text-tertiary",
@@ -515,7 +515,7 @@ const Input = ({
           <label htmlFor={inputId} className={labelVariants()}>
             {label}
           </label>
-          {required && <span className="body-md text-brand-tertiary font-medium">*</span>}
+          {required && <span className="body-sm text-brand-tertiary font-medium">*</span>}
           {showHelp && (
             <div className="ml-xs text-quaternary">
               <InfoCircle size="1rem" className="text-quaternary" />

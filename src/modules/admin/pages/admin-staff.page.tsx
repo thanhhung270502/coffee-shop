@@ -63,7 +63,12 @@ export function AdminStaffPage() {
         header: "Actions",
         cell: ({ row }) => (
           <div className="flex gap-2">
-            <Button variant="tertiary-gray" size="sm" startIcon={Edit2} onClick={() => openEdit(row.original)}>
+            <Button
+              variant="tertiary-gray"
+              size="sm"
+              startIcon={Edit2}
+              onClick={() => openEdit(row.original)}
+            >
               Edit
             </Button>
             <Button
@@ -82,7 +87,7 @@ export function AdminStaffPage() {
         ),
       },
     ],
-    [resetPasswordMutation],
+    [resetPasswordMutation]
   );
 
   const openCreate = () => {
@@ -128,19 +133,42 @@ export function AdminStaffPage() {
                 </Button>
               }
             />
-            <DialogContent className="!w-full max-w-md">
+            <DialogContent className="w-full! max-w-md">
               <div className="flex flex-col gap-4 p-6">
                 <DialogTitle>{editing ? "Edit Staff" : "Add Staff"}</DialogTitle>
                 {!editing && (
                   <>
-                    <Input label="Email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} />
-                    <Input label="Password" type="password" value={form.password} onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} />
+                    <Input
+                      label="Email"
+                      value={form.email}
+                      onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                    />
+                    <Input
+                      label="Password"
+                      type="password"
+                      value={form.password}
+                      onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
+                    />
                   </>
                 )}
-                <Input label="Name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
-                <Input label="Phone" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} />
+                <Input
+                  label="Name"
+                  value={form.name}
+                  onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+                />
+                <Input
+                  label="Phone"
+                  value={form.phone}
+                  onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                />
                 <div className="flex justify-end gap-2">
-                  <DialogClose render={<Button variant="secondary-gray" size="sm">Cancel</Button>} />
+                  <DialogClose
+                    render={
+                      <Button variant="secondary-gray" size="sm">
+                        Cancel
+                      </Button>
+                    }
+                  />
                   <Button variant="primary" size="sm" onClick={handleSubmit}>
                     {editing ? "Update" : "Create"}
                   </Button>
@@ -151,12 +179,16 @@ export function AdminStaffPage() {
         }
       />
 
-      <div className="rounded-xl border border-primary bg-white p-4">
+      <div className="border-primary rounded-xl border bg-white p-4">
         <Table
           data={data?.staff ?? []}
           columns={columns}
           isLoading={isLoading}
-          emptyState={<Typography variant="body-sm" color="secondary">No staff yet</Typography>}
+          emptyState={
+            <Typography variant="body-sm" color="secondary">
+              No staff yet
+            </Typography>
+          }
         />
       </div>
     </div>

@@ -22,11 +22,11 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
   return (
     <aside
       className={cn(
-        "flex h-full flex-col border-r border-primary bg-white transition-all duration-200",
-        collapsed ? "w-16" : "w-64",
+        "border-primary flex h-screen flex-col border-r bg-white transition-all duration-300",
+        collapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="flex h-14 items-center justify-between border-b border-primary px-4">
+      <div className="border-primary flex h-14 items-center justify-between border-b px-4">
         {!collapsed && (
           <Typography variant="heading-sm" weight="semibold">
             Coffee Admin
@@ -57,7 +57,7 @@ export function AdminSidebar({ collapsed, onToggle }: AdminSidebarProps) {
                 "flex items-center gap-3 rounded-lg px-3 py-2 transition-colors",
                 isActive
                   ? "bg-brand-primary text-brand-tertiary"
-                  : "text-secondary hover:bg-secondary-hover hover:text-primary",
+                  : "text-secondary hover:bg-secondary-hover hover:text-primary"
               )}
               title={collapsed ? item.label : undefined}
             >
