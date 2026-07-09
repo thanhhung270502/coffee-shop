@@ -1,9 +1,9 @@
 "use client";
 
+import type { RegisterRequest, RegisterResponse } from "@common/models/auth";
+import { API_REGISTER } from "@common/models/auth";
 import { useMutation } from "@tanstack/react-query";
 
-import { API_REGISTER } from "@common/models/auth";
-import type { RegisterRequest, RegisterResponse } from "@common/models/auth";
 import { postRequest } from "@/libs/api-client";
 
 export function useRegisterMutation() {

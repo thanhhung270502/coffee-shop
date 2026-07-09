@@ -1,10 +1,10 @@
-import type { Role } from "@/generated/prisma";
 import { redirect } from "next/navigation";
 
+import type { Role } from "@/generated/prisma";
 import { AppError } from "@/libs/errors";
 
-import { getSessionUser } from "./session";
 import type { PublicUser } from "./session";
+import { getSessionUser } from "./session";
 
 export async function requireAuth(): Promise<PublicUser> {
   const user = await getSessionUser();

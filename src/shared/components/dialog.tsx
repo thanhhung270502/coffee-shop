@@ -1,53 +1,70 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { Dialog as BaseDialog } from "@base-ui/react/dialog";
+import { cva } from "class-variance-authority";
 
-import { cn } from "@/shared/utils/cn.util";
+import { cn } from "@/shared/utils";
 
-import { Button } from "./button";
+const Dialog = BaseDialog.Root;
 
-export type DialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title: string;
-  children: ReactNode;
-  className?: string;
+type DialogContentProps = BaseDialog.Popup.Props & {
+  container?: BaseDialog.Portal.Props["container"];
+  backdropClassName?: string;
 };
 
-export function Dialog({ open, onOpenChange, title, children, className }: DialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+const popupVariants = cva([
+  "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
+  "w-94",
+  "rounded-2xl bg-white shadow-lg z-dialog",
+  "transition-all duration-150",
+  "data-[ending-style]:scale-90 data-[ending-style]:opacity-0",
+  "data-[nested-dialog-open]:after:absolute data-[nested-dialog-open]:after:inset-0",
+  "data-[nested-dialog-open]:after:rounded-[inherit] data-[nested-dialog-open]:after:bg-black/20",
+  "pointer-events-auto",
+]);
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) {
-      return;
-    }
-
-    if (open && !dialog.open) {
-      dialog.showModal();
-    }
-
-    if (!open && dialog.open) {
-      dialog.close();
-    }
-  }, [open]);
-
+const DialogContent = ({
+  children,
+  className,
+  container,
+  backdropClassName,
+  ...props
+}: DialogContentProps) => {
   return (
-    <dialog
-      ref={dialogRef}
-      className={cn(
-        "w-full max-w-lg rounded-lg border border-zinc-200 bg-white p-0 shadow-xl backdrop:bg-black/50 dark:border-zinc-800 dark:bg-zinc-950",
-        className,
-      )}
-      onClose={() => onOpenChange(false)}
-    >
-      <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">{title}</h2>
-        <Button variant="outlined-gray" size="sm" onClick={() => onOpenChange(false)}>
-          Đóng
-        </Button>
-      </div>
-      <div className="px-6 py-4">{children}</div>
-    </dialog>
+    <BaseDialog.Portal container={container}>
+      <BaseDialog.Backdrop
+        className={cn(
+          "z-overlay fixed inset-0 bg-black/50 backdrop-blur-[2px]",
+          "transition-all duration-150",
+          "data-ending-style:opacity-100 data-starting-style:opacity-0",
+          backdropClassName
+        )}
+      />
+      <BaseDialog.Popup className={cn(popupVariants(), className)} {...props}>
+        <div className="flex h-full max-h-dvh flex-col">{children}</div>
+      </BaseDialog.Popup>
+    </BaseDialog.Portal>
   );
-}
+};
+
+type DialogTitleProps = BaseDialog.Title.Props;
+const DialogTitle = ({ className, ...props }: DialogTitleProps) => {
+  return (
+    <BaseDialog.Title
+      className={cn("text-neutral-primary heading-sm font-semibold", className)}
+      {...props}
+    />
+  );
+};
+
+type DialogDescriptionProps = BaseDialog.Description.Props;
+const DialogDescription = ({ className, ...props }: DialogDescriptionProps) => {
+  return (
+    <BaseDialog.Description className={cn("text-neutral-primary body-lg", className)} {...props} />
+  );
+};
+
+const DialogTrigger = BaseDialog.Trigger;
+const DialogClose = BaseDialog.Close;
+
+export { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle, DialogTrigger };

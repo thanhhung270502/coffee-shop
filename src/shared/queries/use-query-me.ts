@@ -1,9 +1,9 @@
 "use client";
 
+import type { MeResponse } from "@common/models/auth";
+import { API_ME } from "@common/models/auth";
 import { useQuery } from "@tanstack/react-query";
 
-import { API_ME } from "@common/models/auth";
-import type { MeResponse } from "@common/models/auth";
 import { getRequest } from "@/libs/api-client";
 
 export const ME_QUERY_KEY = ["auth", "me"] as const;

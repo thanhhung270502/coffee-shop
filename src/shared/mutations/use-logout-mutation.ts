@@ -1,9 +1,9 @@
 "use client";
 
+import type { LogoutResponse } from "@common/models/auth";
+import { API_LOGOUT } from "@common/models/auth";
 import { useMutation } from "@tanstack/react-query";
 
-import { API_LOGOUT } from "@common/models/auth";
-import type { LogoutResponse } from "@common/models/auth";
 import { postRequest } from "@/libs/api-client";
 
 export function useLogoutMutation() {

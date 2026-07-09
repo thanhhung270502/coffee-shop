@@ -1,30 +1,33 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-import js from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
-import jsxA11y from "eslint-plugin-jsx-a11y";
 import onlyWarn from "eslint-plugin-only-warn";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
-import turboPlugin from "eslint-plugin-turbo";
-import unusedImports from "eslint-plugin-unused-imports";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
-import globals from "globals";
-import pluginNext from "@next/eslint-plugin-next";
 import pluginReactHooks from "eslint-plugin-react-hooks";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
+import unusedImports from "eslint-plugin-unused-imports";
 
-const baseConfig = [
-  js.configs.recommended,
-  eslintConfigPrettier,
-  jsxA11y.flatConfigs.recommended,
-  ...tseslint.configs.recommended,
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "src/generated/**",
+  ]),
   {
-    plugins: {
-      turbo: turboPlugin,
-    },
+    settings: { react: { version: "detect" } },
     rules: {
-      "turbo/no-undeclared-env-vars": "warn",
+      ...pluginReactHooks.configs.recommended.rules,
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/incompatible-library": "off",
+      // React scope no longer necessary with new JSX transform.
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/no-explicit-any": "off",
     },
   },
   {
@@ -69,54 +72,6 @@ const baseConfig = [
         },
       ],
       "simple-import-sort/exports": "error",
-    },
-  },
-  {
-    ignores: ["dist/**", "node_modules/**"],
-  },
-]
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    "src/generated/**",
-  ]),
-  ...baseConfig,
-  {
-    ...pluginReact.configs.flat.recommended,
-    languageOptions: {
-      ...pluginReact.configs.flat.recommended.languageOptions,
-      globals: {
-        ...globals.serviceworker,
-      },
-    },
-  },
-  {
-    plugins: {
-      "@next/next": pluginNext,
-    },
-    rules: {
-      ...pluginNext.configs.recommended.rules,
-      ...pluginNext.configs["core-web-vitals"].rules,
-    },
-  },
-  {
-    plugins: {
-      "react-hooks": pluginReactHooks,
-    },
-    settings: { react: { version: "detect" } },
-    rules: {
-      ...pluginReactHooks.configs.recommended.rules,
-      "react-hooks/set-state-in-effect": "off",
-      // React scope no longer necessary with new JSX transform.
-      "react/react-in-jsx-scope": "off",
     },
   },
 ]);

@@ -1,4 +1,4 @@
-import { APIBaseRoutes, APIMethod, type APIDefinition } from "../api-base";
+import { APIBaseRoutes, type APIDefinition,APIMethod } from "../api-base";
 
 import type {
   LoginRequest,

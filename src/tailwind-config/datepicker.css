@@ -1,0 +1,339 @@
+/* Time picker popper */
+.time-picker-popper {
+  @apply z-50 body-md border-none;
+}
+
+/* DatePicker container */
+.time-picker-popper .react-datepicker {
+  @apply border border-primary rounded-xl shadow-lg bg-white overflow-hidden mt-sm;
+}
+
+/* Hide the header (not needed for time-only picker) */
+.time-picker-popper .react-datepicker__header {
+  display: none;
+}
+
+/* Time container */
+.time-picker-popper .react-datepicker__time-container {
+  @apply border-none;
+}
+
+.time-picker-popper .react-datepicker__time {
+  @apply bg-white;
+}
+
+.time-picker-popper .react-datepicker__time-box {
+  @apply w-full;
+}
+
+/* Time list */
+.time-picker-popper .react-datepicker__time-list {
+  @apply max-h-48 overflow-y-auto py-sm scrollbar-thin;
+}
+
+/* Time list items - styled to match MenuItem component */
+.time-picker-popper .react-datepicker__time-list-item {
+  @apply flex items-center gap-md cursor-pointer transition-colors rounded-sm;
+  @apply font-medium body-md outline-none w-full;
+  @apply bg-white text-primary;
+}
+
+/* Size variants for time list items */
+.time-picker-popper--sm .react-datepicker__time-list-item {
+  @apply px-lg py-md;
+}
+
+.time-picker-popper--md .react-datepicker__time-list-item {
+  @apply px-lg py-md;
+}
+
+/* Hover state */
+.time-picker-popper .react-datepicker__time-list-item:hover {
+  @apply bg-brand-primary text-brand-tertiary;
+}
+
+/* Selected state */
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li.react-datepicker__time-list-item--selected {
+  @apply bg-brand-primary text-brand-tertiary font-semibold;
+}
+
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li.react-datepicker__time-list-item--selected:hover {
+  @apply bg-brand-primary text-brand-tertiary font-semibold;
+}
+
+/* Disabled state */
+.time-picker-popper .react-datepicker__time-list-item--disabled {
+  @apply bg-white text-disabled cursor-not-allowed;
+}
+
+.time-picker-popper .react-datepicker__time-list-item--disabled:hover {
+  @apply bg-white text-disabled;
+}
+
+.time-picker-popper .react-datepicker__triangle {
+  display: none;
+}
+
+/* DatePicker custom styles */
+.langco {
+  @apply min-w-[23.5rem];
+}
+
+.langco .react-datepicker {
+  @apply w-full border-none;
+}
+
+.langco .react-datepicker__header {
+  @apply bg-transparent border-none p-0;
+}
+
+.langco .react-datepicker__navigation {
+  @apply hidden; /* Hidden because we use custom header */
+}
+
+.langco .react-datepicker__month-container {
+  @apply w-full flex flex-col gap-xl;
+}
+
+.langco .react-datepicker__day-names {
+  @apply flex justify-between p-0;
+}
+
+.langco .react-datepicker__day-name {
+  @apply text-secondary body-md font-medium w-10 h-10;
+  @apply flex items-center justify-center m-0;
+}
+
+.langco .react-datepicker__month {
+  @apply flex flex-col gap-1 m-0;
+}
+
+.langco .react-datepicker__week {
+  @apply flex justify-between gap-1;
+}
+
+.langco .react-datepicker__day {
+  @apply w-10 h-10 m-0 p-0 border-none bg-transparent;
+}
+
+.langco .react-datepicker__day:hover,
+.langco .react-datepicker__day--selected,
+.langco .react-datepicker__day--keyboard-selected {
+  @apply bg-transparent border-none;
+}
+
+.langco .react-datepicker__day--in-range,
+.langco .react-datepicker__day--in-selecting-range {
+  @apply bg-transparent;
+}
+
+/* Continuous bar styling for range dates */
+.langco .react-datepicker__day--in-range,
+.langco .react-datepicker__day--in-selecting-range {
+  @apply relative;
+}
+
+/* Create continuous background bar using pseudo-element */
+/* Default for all range dates - extend far enough to cover any gap size */
+.langco .react-datepicker__day--in-range::before,
+.langco .react-datepicker__day--in-selecting-range::before {
+  content: "";
+  @apply absolute top-0 bottom-0 bg-brand-solid z-0;
+  left: -50%;
+  right: -50%;
+}
+
+/* Remove border radius for middle dates */
+.langco .react-datepicker__day--in-range > div,
+.langco .react-datepicker__day--in-selecting-range > div {
+  @apply relative z-10 rounded-none;
+}
+
+/* Range start - rounded left, extend right to connect */
+.langco .react-datepicker__day--range-start::before,
+.langco .react-datepicker__day--selecting-range-start::before {
+  @apply rounded-l-4xl;
+  left: 0;
+  right: -50%;
+}
+
+.langco .react-datepicker__day--range-start > div,
+.langco .react-datepicker__day--selecting-range-start > div {
+  @apply rounded-l-4xl rounded-r-none;
+}
+
+/* Range end - extend left to connect, rounded right */
+.langco .react-datepicker__day--range-end::before,
+.langco .react-datepicker__day--selecting-range-end::before {
+  @apply rounded-r-4xl;
+  left: -50%;
+  right: 0;
+}
+
+.langco .react-datepicker__day--range-end > div,
+.langco .react-datepicker__day--selecting-range-end > div {
+  @apply rounded-r-4xl rounded-l-none;
+}
+
+/* Single day selection (start and end are same) - fully rounded */
+.langco .react-datepicker__day--range-start.react-datepicker__day--range-end::before,
+.langco
+  .react-datepicker__day--selecting-range-start.react-datepicker__day--selecting-range-end::before {
+  @apply rounded-4xl;
+  left: 0;
+  right: 0;
+}
+
+.langco .react-datepicker__day--range-start.react-datepicker__day--range-end > div,
+.langco
+  .react-datepicker__day--selecting-range-start.react-datepicker__day--selecting-range-end
+  > div {
+  @apply rounded-4xl;
+}
+
+/* First day of week - don't extend left */
+.langco .react-datepicker__day--in-range:first-child::before,
+.langco .react-datepicker__day--in-selecting-range:first-child::before,
+.langco .react-datepicker__day--range-start:first-child::before,
+.langco .react-datepicker__day--selecting-range-start:first-child::before {
+  left: 0;
+}
+
+/* Last day of week - don't extend right */
+.langco .react-datepicker__day--in-range:last-child::before,
+.langco .react-datepicker__day--in-selecting-range:last-child::before,
+.langco .react-datepicker__day--range-end:last-child::before,
+.langco .react-datepicker__day--selecting-range-end:last-child::before {
+  right: 0;
+}
+
+.langco .react-datepicker__current-month {
+  @apply hidden; /* Hidden because we use custom header */
+}
+
+.langco .react-datepicker__aria-live {
+  @apply absolute border-0 h-px -m-px overflow-hidden p-0 w-px whitespace-nowrap;
+  clip-path: circle(0);
+}
+
+.langco .react-datepicker__header {
+  @apply flex flex-col gap-xl;
+}
+
+/* ================================
+   Month Picker Styles
+   ================================ */
+.langco--month-picker .react-datepicker__month-container {
+  @apply w-full;
+}
+
+.langco--month-picker .react-datepicker__month {
+  @apply grid grid-cols-3 gap-md p-sm;
+}
+
+.langco--month-picker .react-datepicker__month-wrapper {
+  @apply contents;
+}
+
+.langco--month-picker .react-datepicker__month-text {
+  @apply py-xl px-lg rounded-xl cursor-pointer w-full;
+  @apply body-md font-medium text-center;
+  @apply bg-secondary-subtle text-primary;
+  @apply transition-all duration-200 ease-in-out;
+  @apply border border-transparent;
+}
+
+.langco--month-picker .react-datepicker__month-text:hover {
+  @apply bg-brand-primary rounded-xl text-brand-tertiary;
+  @apply border-brand-purple-200;
+  @apply shadow-sm;
+  transform: translateY(-1px);
+}
+
+.langco--month-picker .react-datepicker__month-text--selected,
+.langco--month-picker .react-datepicker__month-text--keyboard-selected {
+  @apply bg-brand-solid text-white font-semibold;
+  @apply border-brand-purple-700;
+  @apply shadow-md;
+}
+
+.langco--month-picker .react-datepicker__month-text--selected:hover,
+.langco--month-picker .react-datepicker__month-text--keyboard-selected:hover {
+  @apply bg-brand-solid-hover text-white;
+  @apply border-brand-purple-800;
+  transform: translateY(-1px);
+}
+
+.langco--month-picker .react-datepicker__month-text--disabled {
+  @apply bg-disabled-subtle text-disabled cursor-not-allowed;
+  @apply border-transparent shadow-none;
+}
+
+.langco--month-picker .react-datepicker__month-text--disabled:hover {
+  @apply bg-disabled-subtle text-disabled;
+  @apply border-transparent shadow-none;
+  transform: none;
+}
+
+/* ================================
+   Year Picker Styles
+   ================================ */
+.langco--year-picker .react-datepicker__year-container {
+  @apply w-full;
+}
+
+.langco--year-picker .react-datepicker__year {
+  @apply grid grid-cols-3 gap-md p-sm;
+}
+
+.langco--year-picker .react-datepicker__year-wrapper {
+  @apply contents;
+}
+
+.langco--year-picker .react-datepicker__year-text {
+  @apply py-xl px-lg rounded-xl cursor-pointer w-full;
+  @apply body-md font-medium text-center;
+  @apply bg-secondary-subtle text-primary;
+  @apply transition-all duration-200 ease-in-out;
+  @apply border border-transparent;
+}
+
+.langco--year-picker .react-datepicker__year-text:hover {
+  @apply bg-brand-primary rounded-xl text-brand-tertiary;
+  @apply border-brand-purple-200;
+  @apply shadow-sm;
+  transform: translateY(-1px);
+}
+
+.langco--year-picker .react-datepicker__year-text--selected,
+.langco--year-picker .react-datepicker__year-text--keyboard-selected {
+  @apply bg-brand-solid text-white font-semibold;
+  @apply border-brand-purple-700;
+  @apply shadow-md;
+}
+
+.langco--year-picker .react-datepicker__year-text--selected:hover,
+.langco--year-picker .react-datepicker__year-text--keyboard-selected:hover {
+  @apply bg-brand-solid-hover text-white;
+  @apply border-brand-purple-800;
+  transform: translateY(-1px);
+}
+
+.langco--year-picker .react-datepicker__year-text--disabled {
+  @apply bg-disabled-subtle text-disabled cursor-not-allowed;
+  @apply border-transparent shadow-none;
+}
+
+.langco--year-picker .react-datepicker__year-text--disabled:hover {
+  @apply bg-disabled-subtle text-disabled;
+  @apply border-transparent shadow-none;
+  transform: none;
+}
