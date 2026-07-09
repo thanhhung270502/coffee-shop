@@ -1,65 +1,65 @@
 # Shared UI Components
 
-**Required preference:** When building UI in `src/modules/`, always use components from `@/shared/components` instead of native HTML or custom primitives. Add new components to `src/shared/components/` only when reused in ≥ 2 places — do not duplicate UI inside modules.
+Use shared primitives from `@/shared/components` by default. Do not build ad-hoc UI inside feature modules when equivalent shared components exist.
 
 ## Import
 
 ```tsx
 import { Button, Typography, Input, Table } from "@/shared/components";
-// or import directly from a specific file for clearer tree-shaking
 import { Dialog, DialogContent, DialogTitle } from "@/shared/components/dialog";
 ```
 
-## Available components
+## Available component groups
 
-See the full list in `src/shared/components/index.ts`:
+| Group | Components |
+| ----- | ---------- |
+| Typography & layout | `Typography`, `Card`, `Separator`, `Skeleton`, `LinearProgress` |
+| Actions | `Button` |
+| Forms | `Input`, `Textarea`, `DebouncedInput`, `Checkbox`, `Radio`, `RadioGroup`, `Select`, `DateInput`, `DatePicker`, `DateRangeInput`, `Toggle`, `ToggleGroup` |
+| Overlays | `Dialog`, `Sheet`, `Popover`, `Tooltip`, `Collapsible` |
+| Data display | `Badge`, `Table`, `TableFooter`, `TablePagination`, `SortDirectionIcon` |
+| RHF wrappers | `RHFInput`, `RHFTextarea`, `RHFCheckbox`, `RHFCheckboxGroup`, `RHFRadio`, `RHFRadioGroup`, `RHFSelect`, `RHFDebounceInput`, `RHFDateInput`, `RHFDateRangeInput`, `RHFToggle` |
 
-| Group               | Components                                                                                        |
-| ------------------- | ------------------------------------------------------------------------------------------------- |
-| Typography & layout | `Typography`, `Card`, `Separator`, `Skeleton`, `LinearProgress`                                   |
-| Actions             | `Button`                                                                                          |
-| Forms               | `Input`, `DebouncedInput`, `Checkbox`, `Radio`, `RadioGroup`, `Select`, `DateInput`, `DatePicker` |
-| Overlays            | `Dialog`, `Sheet`, `Popover`, `Tooltip`, `Collapsible`                                            |
-| Data display        | `Badge`, `Table`, `TableFooter`, `TablePagination`, `SortDirectionIcon`                           |
-| Icons               | `ExternalIcons`                                                                                   |
+> Source of truth: `src/shared/components/index.ts`
 
-## Quick mapping
+## Mapping: use shared instead of native
 
-Use shared components, not raw HTML:
+| Need | Use | Avoid |
+| ---- | --- | ----- |
+| Text/headings | `<Typography />` | raw `<p>`, `<h1>...<h6>` |
+| Buttons | `<Button />` | raw `<button>` |
+| Input | `<Input />`, `<Textarea />` | raw `<input>`, `<textarea>` |
+| Selector | `<Select />`, `<Toggle />`, `<ToggleGroup />` | custom selectors |
+| Modal/Drawer | `<Dialog />`, `<Sheet />` | custom overlays |
+| Table | `<Table />` + pagination components | raw `<table>` implementation |
+| Status chip | `<Badge />` | custom badge spans |
 
-| Need             | Use                                                 | Do not use                              |
-| ---------------- | --------------------------------------------------- | --------------------------------------- |
-| Text / heading   | `<Typography variant="..." />`                      | `<p>`, `<h1>`–`<h6>`, `<span>` (unstyled) |
-| Clickable action | `<Button variant="..." size="..." />`               | `<button>`                              |
-| Text input       | `<Input />`, `<DebouncedInput />` (search/filter)   | `<input>`                               |
-| Checkbox / radio | `<Checkbox />`, `<Radio />`, `<RadioGroup />`       | `<input type="checkbox/radio">`         |
-| Dropdown         | `<Select />`                                        | `<select>`                              |
-| Date             | `<DateInput />`, `<DatePicker />`                   | Custom date picker                      |
-| Modal / drawer   | `<Dialog>`, `<Sheet>`                               | Custom overlay                          |
-| Tooltip / popover| `<Tooltip />`, `<Popover />`                        | Custom floating UI                      |
-| Data table       | `<Table />` + `TablePagination`                     | Raw `<table>` + custom pagination       |
-| Loading          | `<Skeleton />`, `<LinearProgress />`                | Custom shimmer divs                     |
-| Status chip      | `<Badge />`                                         | Custom badge spans                      |
-| Divider          | `<Separator />`                                   | `<hr>`                                  |
+## Form pattern
 
-## Variants
+For multi-field forms, use React Hook Form + Zod:
 
-**Typography:** `heading-xl`, `heading-lg`, `heading-md`, `heading-sm`, `body-lg`, `body-md`, `body-sm`, `body-xs` — plus `color` and `weight` props.
+1. Schema + inferred type in hook (`z.infer`)
+2. `useForm` + `zodResolver`
+3. Shared `FormProvider` (`src/shared/providers/form.provider.tsx`)
+4. `RHF*` components from `@/shared/components`
 
-**Button:** `primary`, `gradient`, `secondary-gray`, `secondary-color`, `tertiary-gray`, `tertiary-color`, `link`, `link-gray`, `destructive-primary`, `destructive-secondary`, `destructive-tertiary`, `destructive-link` — sizes: `xs`–`xl`.
+## Copy and language requirement
 
-**Icons:** Use `iconsax-reactjs` — pass via `startIcon`/`endIcon` on `Button`, `leadingElement`/`trailingElement` on `Input`.
+All user-facing text rendered by components must be English:
+
+- labels, placeholders, button text
+- table headers and empty states
+- dialog titles/descriptions
+- aria labels and tooltips
 
 ```tsx
 // ✅ GOOD
 <Typography variant="heading-md">Orders</Typography>
-<Button variant="primary" size="md">Confirm</Button>
-<DebouncedInput placeholder="Search..." onChange={setQuery} />
+<Button variant="primary">Add Category</Button>
+<Input label="Category Name" placeholder="Enter category name" />
 
 // ❌ BAD
-<h3 className="text-lg font-semibold">Orders</h3>
-<button className="bg-black text-white px-4 py-2">Confirm</button>
-<input className="border rounded" onChange={...} />
+<Typography variant="heading-md">Đơn hàng</Typography>
+<Button variant="primary">Thêm danh mục</Button>
+<input placeholder="Nhập tên danh mục" />
 ```
-
-> When unsure whether a component already exists — check `src/shared/components/index.ts` before creating a new one.

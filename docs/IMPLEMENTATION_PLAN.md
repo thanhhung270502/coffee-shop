@@ -52,7 +52,7 @@
 | Phase | Tên | Trạng thái | Tiến độ |
 |-------|-----|------------|---------|
 | 0 | Foundation | `[x]` | 8/8 |
-| 1 | Admin | `[ ]` | 0/32 |
+| 1 | Admin | `[x]` | 32/32 |
 | 2 | Customer | `[ ]` | 0/28 |
 | 3 | Staff (POS) | `[ ]` | 0/24 |
 | 4 | Polish & Launch | `[ ]` | 0/12 |
@@ -141,10 +141,10 @@ src/shared/utils/currency.util.ts
 
 ### 1.1 Admin Shell & Navigation
 
-- [ ] Layout admin: sidebar + header + breadcrumb
-- [ ] Navigation: Dashboard, Danh mục, Đồ uống, Sản phẩm, Đơn hàng, Nhân viên, Cài đặt
-- [ ] Trang Dashboard skeleton (placeholder cards)
-- [ ] Responsive: sidebar collapse trên tablet
+- [x] Layout admin: sidebar + header + breadcrumb
+- [x] Navigation: Dashboard, Danh mục, Đồ uống, Sản phẩm, Đơn hàng, Nhân viên, Cài đặt
+- [x] Trang Dashboard skeleton (placeholder cards)
+- [x] Responsive: sidebar collapse trên tablet
 
 **Routes:**
 
@@ -160,23 +160,23 @@ src/shared/utils/currency.util.ts
 
 ### 1.2 Categories API & UI
 
-- [ ] `GET /api/admin/categories` — list (filter by `type`)
-- [ ] `POST /api/admin/categories` — tạo
-- [ ] `PATCH /api/admin/categories/[id]` — sửa
-- [ ] `DELETE /api/admin/categories/[id]` — xóa (soft delete hoặc check rỗng)
-- [ ] UI: bảng danh mục + form tạo/sửa modal
-- [ ] Phân tab: Danh mục đồ uống | Danh mục sản phẩm
+- [x] `GET /api/admin/categories` — list (filter by `type`)
+- [x] `POST /api/admin/categories` — tạo
+- [x] `PATCH /api/admin/categories/[id]` — sửa
+- [x] `DELETE /api/admin/categories/[id]` — xóa (soft delete hoặc check rỗng)
+- [x] UI: bảng danh mục + form tạo/sửa modal
+- [x] Phân tab: Danh mục đồ uống | Danh mục sản phẩm
 
 ### 1.3 Drinks (Đồ uống) API & UI
 
-- [ ] `GET /api/admin/drinks` — list + filter category, search
-- [ ] `GET /api/admin/drinks/[id]` — chi tiết kèm variants, toppings
-- [ ] `POST /api/admin/drinks` — tạo product type DRINK
-- [ ] `PATCH /api/admin/drinks/[id]` — sửa
-- [ ] `PATCH /api/admin/drinks/[id]/status` — bật/tắt `isActive`
-- [ ] Quản lý variants (S/M/L + giá) trong form
-- [ ] Quản lý toppings gắn với product
-- [ ] Upload ảnh (URL string trước; S3/Cloudinary phase sau)
+- [x] `GET /api/admin/drinks` — list + filter category, search
+- [x] `GET /api/admin/drinks/[id]` — chi tiết kèm variants, toppings
+- [x] `POST /api/admin/drinks` — tạo product type DRINK
+- [x] `PATCH /api/admin/drinks/[id]` — sửa
+- [x] `PATCH /api/admin/drinks/[id]/status` — bật/tắt `isActive`
+- [x] Quản lý variants (S/M/L + giá) trong form
+- [x] Quản lý toppings gắn với product
+- [x] Upload ảnh (URL string trước; S3/Cloudinary phase sau)
 
 **Validation (Zod):**
 
@@ -186,56 +186,56 @@ src/shared/utils/currency.util.ts
 
 ### 1.4 Packaged Products API & UI
 
-- [ ] `GET /api/admin/products` — list sản phẩm đóng gói
-- [ ] `POST /api/admin/products` — tạo product type PACKAGED
-- [ ] `PATCH /api/admin/products/[id]` — sửa
-- [ ] Quản lý SKUs: label (250g/500g), price, stock, sku code
-- [ ] UI: bảng + form, hiển thị tồn kho, cảnh báo stock thấp (< 5)
-- [ ] `PATCH /api/admin/products/[id]/stock` — điều chỉnh tồn kho thủ công
+- [x] `GET /api/admin/products` — list sản phẩm đóng gói
+- [x] `POST /api/admin/products` — tạo product type PACKAGED
+- [x] `PATCH /api/admin/products/[id]` — sửa
+- [x] Quản lý SKUs: label (250g/500g), price, stock, sku code
+- [x] UI: bảng + form, hiển thị tồn kho, cảnh báo stock thấp (< 5)
+- [x] `PATCH /api/admin/products/[id]/stock` — điều chỉnh tồn kho thủ công
 
 ### 1.5 Toppings (dùng chung cho đồ uống)
 
-- [ ] `GET/POST/PATCH/DELETE /api/admin/toppings`
-- [ ] UI: trang quản lý topping độc lập hoặc section trong Drinks
-- [ ] Fields: name, price, isActive
+- [x] `GET/POST/PATCH/DELETE /api/admin/toppings`
+- [x] UI: trang quản lý topping độc lập hoặc section trong Drinks
+- [x] Fields: name, price, isActive
 
 ### 1.6 Orders Management (Admin)
 
-- [ ] `GET /api/admin/orders` — list + filter: type, status, channel, date range
-- [ ] `GET /api/admin/orders/[id]` — chi tiết đơn
-- [ ] `PATCH /api/admin/orders/[id]/status` — đổi trạng thái
-- [ ] UI: bảng đơn hàng, filter tabs (Tất cả | Nước | Sản phẩm | Online | POS)
-- [ ] UI: trang chi tiết đơn — items, khách, địa chỉ, timeline trạng thái
-- [ ] Xử lý `PRODUCT_ORDER`: xác nhận → đóng gói → giao → hoàn thành
-- [ ] Trừ tồn kho khi xác nhận `PRODUCT_ORDER`
+- [x] `GET /api/admin/orders` — list + filter: type, status, channel, date range
+- [x] `GET /api/admin/orders/[id]` — chi tiết đơn
+- [x] `PATCH /api/admin/orders/[id]/status` — đổi trạng thái
+- [x] UI: bảng đơn hàng, filter tabs (Tất cả | Nước | Sản phẩm | Online | POS)
+- [x] UI: trang chi tiết đơn — items, khách, địa chỉ, timeline trạng thái
+- [x] Xử lý `PRODUCT_ORDER`: xác nhận → đóng gói → giao → hoàn thành
+- [x] Trừ tồn kho khi xác nhận `PRODUCT_ORDER`
 
 ### 1.7 Staff Management
 
-- [ ] `GET /api/admin/staff` — list nhân viên (role STAFF)
-- [ ] `POST /api/admin/staff` — tạo tài khoản staff (admin tạo, không public register)
-- [ ] `PATCH /api/admin/staff/[id]` — sửa name, phone, isActive
-- [ ] `PATCH /api/admin/staff/[id]/reset-password` — reset mật khẩu
-- [ ] UI: bảng nhân viên + form tạo
+- [x] `GET /api/admin/staff` — list nhân viên (role STAFF)
+- [x] `POST /api/admin/staff` — tạo tài khoản staff (admin tạo, không public register)
+- [x] `PATCH /api/admin/staff/[id]` — sửa name, phone, isActive
+- [x] `PATCH /api/admin/staff/[id]/reset-password` — reset mật khẩu
+- [x] UI: bảng nhân viên + form tạo
 
 ### 1.8 Settings
 
-- [ ] Model `ShopSettings` (singleton): tên quán, địa chỉ, SĐT, giờ mở cửa, phí ship cơ bản
-- [ ] `GET/PATCH /api/admin/settings`
-- [ ] UI: form cài đặt cơ bản
+- [x] Model `ShopSettings` (singleton): tên quán, địa chỉ, SĐT, giờ mở cửa, phí ship cơ bản
+- [x] `GET/PATCH /api/admin/settings`
+- [x] UI: form cài đặt cơ bản
 
 ### 1.9 Dashboard (sau khi có orders — có thể làm cuối Phase 1)
 
-- [ ] `GET /api/admin/dashboard/stats` — doanh thu hôm nay, số đơn, đơn chờ xử lý
-- [ ] `GET /api/admin/dashboard/top-products` — top 5 món bán chạy
-- [ ] UI: stat cards + bảng đơn gần đây
+- [x] `GET /api/admin/dashboard/stats` — doanh thu hôm nay, số đơn, đơn chờ xử lý
+- [x] `GET /api/admin/dashboard/top-products` — top 5 món bán chạy
+- [x] UI: stat cards + bảng đơn gần đây
 
 ### ✅ Definition of Done — Phase 1
 
-- [ ] Admin login → CRUD đầy đủ categories, drinks, products, toppings
-- [ ] Tạo được nhân viên mới với role STAFF
-- [ ] Xem và đổi trạng thái đơn hàng (test bằng seed hoặc API thủ công)
-- [ ] Seed data: ≥ 3 categories, ≥ 10 đồ uống, ≥ 5 sản phẩm đóng gói
-- [ ] `npm run lint:strict` + `check-types` pass
+- [x] Admin login → CRUD đầy đủ categories, drinks, products, toppings
+- [x] Tạo được nhân viên mới với role STAFF
+- [x] Xem và đổi trạng thái đơn hàng (test bằng seed hoặc API thủ công)
+- [x] Seed data: ≥ 3 categories, ≥ 10 đồ uống, ≥ 5 sản phẩm đóng gói
+- [x] `npm run lint:strict` + `check-types` pass
 
 ---
 
@@ -672,16 +672,17 @@ PATCH  /api/pos/orders/[id]/status
 |------|-------|---------|
 | 2026-07-08 | — | Tạo implementation plan |
 | 2026-07-08 | 0 | Hoàn thành Phase 0 — schema, seed, RBAC layout guards, modules scaffold, shared UI |
+| 2026-07-09 | 1 | Hoàn thành Phase 1 — admin shell, CRUD APIs/UI, settings migration, dashboard, seed mở rộng |
 | | | |
 
 ---
 
 ## Bước tiếp theo
 
-**Bắt đầu Phase 1** — Admin shell & CRUD categories/drinks/products.
+**Bắt đầu Phase 2** — Customer shell, public catalog, carts, checkout, order tracking.
 
 ```bash
-# Khi sẵn sàng implement Phase 0:
+# Khi sẵn sàng implement Phase 2:
 npm run db:migrate
 npm run db:seed
 npm run dev

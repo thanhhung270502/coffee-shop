@@ -1,8 +1,8 @@
 # Project Context Files
 
-Reference material for the AI agent — split out of `CLAUDE.md` to keep the entry point concise.
+Reference material for the AI agent, split out of `CLAUDE.md`:
 
 | File | Contents |
 | ---- | -------- |
-| [project.md](project.md) | Prisma, Auth & Session, API routes, RBAC, system roles |
-| [shared-components.md](shared-components.md) | Design-system primitives — prefer `@/shared/components` |
+| [project.md](project.md) | Current status, Prisma/Auth/RBAC, API routes, system roles, language rule |
+| [shared-components.md](shared-components.md) | Shared UI primitives, RHF form pattern, and English copy requirements |
