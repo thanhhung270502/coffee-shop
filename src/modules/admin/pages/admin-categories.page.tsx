@@ -6,23 +6,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Add, Edit2, Trash } from "iconsax-reactjs";
 
 import { AdminPageHeader } from "@/modules/admin/components/admin-page-header";
+import { CategoryForm } from "@/modules/admin/components/category-form";
+import { useCategoryForm } from "@/modules/admin/hooks/use-category-form";
 import { Badge } from "@/shared/components/badge";
 import { Button } from "@/shared/components/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/shared/components/dialog";
-import { Input } from "@/shared/components/input";
+import { Dialog, DialogContent, DialogTrigger } from "@/shared/components/dialog";
 import { Table } from "@/shared/components/table";
 import { Typography } from "@/shared/components/typography";
-import {
-  useCreateCategoryMutation,
-  useDeleteCategoryMutation,
-  useUpdateCategoryMutation,
-} from "@/shared/mutations/use-admin-category-mutations";
+import { useDeleteCategoryMutation } from "@/shared/mutations/use-admin-category-mutations";
 import { useQueryAdminCategories } from "@/shared/queries/use-query-admin-categories";
 import { cn } from "@/shared/utils";
 
@@ -31,23 +22,21 @@ const TABS: { label: string; type: EProductType }[] = [
   { label: "Products", type: "PACKAGED" as EProductType },
 ];
 
-type CategoryFormState = {
-  name: string;
-  sortOrder: string;
-};
-
-const emptyForm: CategoryFormState = { name: "", sortOrder: "0" };
-
 export function AdminCategoriesPage() {
   const [activeTab, setActiveTab] = useState<EProductType>("DRINK" as EProductType);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<CategoryObject | null>(null);
-  const [form, setForm] = useState<CategoryFormState>(emptyForm);
 
   const { data, isLoading } = useQueryAdminCategories(activeTab);
-  const createMutation = useCreateCategoryMutation();
-  const updateMutation = useUpdateCategoryMutation();
   const deleteMutation = useDeleteCategoryMutation();
+  const {
+    open,
+    setOpen,
+    openCreate,
+    openEdit,
+    editing,
+    methods,
+    onSubmit,
+    isSubmitting,
+  } = useCategoryForm(activeTab);
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -101,41 +90,8 @@ export function AdminCategoriesPage() {
         ),
       },
     ],
-    [deleteMutation, handleDelete]
+    [openEdit, deleteMutation, handleDelete]
   );
-
-  const openCreate = () => {
-    setEditing(null);
-    setForm(emptyForm);
-    setFormOpen(true);
-  };
-
-  const openEdit = (category: CategoryObject) => {
-    setEditing(category);
-    setForm({ name: category.name, sortOrder: String(category.sortOrder) });
-    setFormOpen(true);
-  };
-
-  const handleSubmit = async () => {
-    const sortOrder = Number(form.sortOrder) || 0;
-    if (editing) {
-      await updateMutation.mutateAsync({
-        id: editing.id,
-        data: { name: form.name, sortOrder },
-      });
-    } else {
-      await createMutation.mutateAsync({
-        name: form.name,
-        type: activeTab,
-        sortOrder,
-      });
-    }
-    setFormOpen(false);
-    setForm(emptyForm);
-    setEditing(null);
-  };
-
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <div>
@@ -143,7 +99,7 @@ export function AdminCategoriesPage() {
         title="Categories"
         description="Manage drink and packaged product categories"
         action={
-          <Dialog open={formOpen} onOpenChange={setFormOpen}>
+          <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger
               render={
                 <Button variant="primary" size="sm" startIcon={Add} onClick={openCreate}>
@@ -152,36 +108,13 @@ export function AdminCategoriesPage() {
               }
             />
             <DialogContent className="w-full! max-w-md">
-              <div className="flex flex-col gap-4 p-6">
-                <DialogTitle>{editing ? "Edit Category" : "Add Category"}</DialogTitle>
-                <Input
-                  label="Category Name"
-                  value={form.name}
-                  onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              <div className="p-6">
+                <CategoryForm
+                  methods={methods}
+                  onSubmit={onSubmit}
+                  isSubmitting={isSubmitting}
+                  editing={editing}
                 />
-                <Input
-                  label="Sort Order"
-                  type="number"
-                  value={form.sortOrder}
-                  onChange={(e) => setForm((prev) => ({ ...prev, sortOrder: e.target.value }))}
-                />
-                <div className="flex justify-end gap-2">
-                  <DialogClose
-                    render={
-                      <Button variant="secondary-gray" size="sm">
-                        Cancel
-                      </Button>
-                    }
-                  />
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={handleSubmit}
-                    disabled={!form.name || isSubmitting}
-                  >
-                    {editing ? "Update" : "Create"}
-                  </Button>
-                </div>
               </div>
             </DialogContent>
           </Dialog>

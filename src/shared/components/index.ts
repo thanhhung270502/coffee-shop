@@ -24,6 +24,8 @@ export * from "./table";
 export * from "./table-footer";
 export * from "./table-pagination";
 export * from "./textarea";
+export * from "./toggle";
+export * from "./toggle-group";
 export * from "./tooltip";
 export * from "./typography";
 
@@ -38,3 +40,4 @@ export * from "./react-hook-form/RHFRadio";
 export * from "./react-hook-form/RHFRadioGroup";
 export * from "./react-hook-form/RHFSelect";
 export * from "./react-hook-form/RHFTextarea";
+export * from "./react-hook-form/RHFToggle";
