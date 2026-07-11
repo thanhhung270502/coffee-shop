@@ -12,6 +12,7 @@ export const APIBaseRoutes = {
   CATALOG: "/api/catalog",
   ORDERS: "/api/orders",
   SHOP: "/api/shop",
+  POS: "/api/pos",
 } as const;
 
 export type APIDefinition = {

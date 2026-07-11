@@ -60,6 +60,28 @@ export const createProductOrderSchema = z.object({
   items: z.array(productOrderItemSchema).min(1, "At least one item is required"),
 });
 
+export const posOrderItemSchema = z.object({
+  productId: z.string().min(1, "Product is required"),
+  variantId: z.string().min(1, "Variant is required"),
+  toppingIds: z.array(z.string()).optional(),
+  quantity: z.number().int().min(1, "Quantity must be at least 1"),
+  note: z.string().optional(),
+  options: z
+    .object({
+      sugar: z.string().optional(),
+      ice: z.string().optional(),
+    })
+    .optional(),
+});
+
+export const createPosOrderSchema = z.object({
+  customerName: z.string().optional(),
+  note: z.string().optional(),
+  paymentMethod: z.enum(["CASH", "BANK_TRANSFER"]),
+  items: z.array(posOrderItemSchema).min(1, "At least one item is required"),
+});
+
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
 export type CreateDrinkOrderInput = z.infer<typeof createDrinkOrderSchema>;
 export type CreateProductOrderInput = z.infer<typeof createProductOrderSchema>;
+export type CreatePosOrderInput = z.infer<typeof createPosOrderSchema>;

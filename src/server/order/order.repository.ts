@@ -78,14 +78,16 @@ export async function createOrder(data: {
   orderNumber: string;
   type: OrderType;
   channel: OrderChannel;
-  customerName: string;
-  customerPhone: string;
+  customerName?: string;
+  customerPhone?: string;
   userId?: string;
+  createdById?: string;
   fulfillment?: "DELIVERY" | "PICKUP";
   deliveryAddress?: string;
   shippingAddress?: string;
   note?: string;
   paymentMethod: "COD" | "BANK_TRANSFER" | "CASH";
+  paymentStatus?: "PENDING" | "PAID";
   subtotal: number;
   shippingFee: number;
   total: number;
@@ -99,11 +101,13 @@ export async function createOrder(data: {
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       userId: data.userId,
+      createdById: data.createdById,
       fulfillment: data.fulfillment,
       deliveryAddress: data.deliveryAddress,
       shippingAddress: data.shippingAddress,
       note: data.note,
       paymentMethod: data.paymentMethod,
+      paymentStatus: data.paymentStatus,
       subtotal: data.subtotal,
       shippingFee: data.shippingFee,
       total: data.total,
@@ -130,6 +134,38 @@ export async function createOrder(data: {
     },
     include: orderInclude,
   });
+}
+
+export async function findPosQueue() {
+  return prisma.order.findMany({
+    where: {
+      type: "DRINK_ORDER",
+      status: { in: ["PENDING", "PREPARING", "READY"] },
+    },
+    include: orderInclude,
+    orderBy: { createdAt: "asc" },
+  });
+}
+
+export async function getTodayPosRevenue() {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const result = await prisma.order.aggregate({
+    where: {
+      channel: "POS",
+      type: "DRINK_ORDER",
+      status: { not: "CANCELLED" },
+      createdAt: { gte: startOfDay },
+    },
+    _sum: { total: true },
+    _count: true,
+  });
+
+  return {
+    revenue: result._sum.total ?? 0,
+    count: result._count,
+  };
 }
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {

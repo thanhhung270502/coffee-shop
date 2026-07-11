@@ -1,7 +1,7 @@
 # Coffee Shop — Implementation Plan
 
 > Kế hoạch xây dựng hệ thống quán cà phê: **Admin → Customer → Staff (POS)**  
-> Cập nhật lần cuối: 2026-07-08
+> Cập nhật lần cuối: 2026-07-11
 
 ---
 
@@ -12,7 +12,7 @@
 | **Mục tiêu** | Nền tảng quản lý quán cafe: Admin quản trị, Customer đặt hàng online, Staff bán tại quầy (POS) |
 | **Thứ tự build** | 1. Admin → 2. Customer → 3. Staff (POS) |
 | **Stack** | Next.js 16, React 19, Prisma, PostgreSQL (Neon), Tailwind CSS, TanStack Query, Zod |
-| **Trạng thái hiện tại** | ✅ Auth cơ bản (`User`, `Session`), API login/register/logout/me |
+| **Trạng thái hiện tại** | ✅ Phase 0–3 xong (Auth, Admin, Customer, POS). Tiếp theo: Phase 4 Polish & Launch |
 
 ### Ba vai trò hệ thống
 
@@ -53,8 +53,8 @@
 |-------|-----|------------|---------|
 | 0 | Foundation | `[x]` | 8/8 |
 | 1 | Admin | `[x]` | 32/32 |
-| 2 | Customer | `[ ]` | 0/28 |
-| 3 | Staff (POS) | `[ ]` | 0/24 |
+| 2 | Customer | `[x]` | 28/28 |
+| 3 | Staff (POS) | `[x]` | 28/32 |
 | 4 | Polish & Launch | `[ ]` | 0/12 |
 
 ---
@@ -247,11 +247,11 @@ src/shared/utils/currency.util.ts
 
 ### 2.1 Customer Shell & Homepage
 
-- [ ] Layout customer: header (logo, nav), footer (thông tin quán)
-- [ ] Homepage: hero + 2 CTA chính — **Đặt nước** | **Mua sản phẩm**
-- [ ] Section món bán chạy (đồ uống)
-- [ ] Section sản phẩm nổi bật (đóng gói)
-- [ ] Metadata SEO cơ bản
+- [x] Layout customer: header (logo, nav), footer (thông tin quán)
+- [x] Homepage: hero + 2 CTA chính — **Đặt nước** | **Mua sản phẩm**
+- [x] Section món bán chạy (đồ uống)
+- [x] Section sản phẩm nổi bật (đóng gói)
+- [x] Metadata SEO cơ bản
 
 **Routes:**
 
@@ -270,72 +270,72 @@ src/shared/utils/currency.util.ts
 
 ### 2.2 Public Catalog API
 
-- [ ] `GET /api/catalog/categories?type=DRINK|PACKAGED`
-- [ ] `GET /api/catalog/drinks` — list đồ uống active + variants + toppings
-- [ ] `GET /api/catalog/drinks/[slug]` — chi tiết
-- [ ] `GET /api/catalog/products` — list sản phẩm đóng gói + SKUs còn hàng
-- [ ] `GET /api/catalog/products/[slug]` — chi tiết
-- [ ] `GET /api/shop/settings` — thông tin quán public (giờ mở cửa, phí ship)
+- [x] `GET /api/catalog/categories?type=DRINK|PACKAGED`
+- [x] `GET /api/catalog/drinks` — list đồ uống active + variants + toppings
+- [x] `GET /api/catalog/drinks/[slug]` — chi tiết
+- [x] `GET /api/catalog/products` — list sản phẩm đóng gói + SKUs còn hàng
+- [x] `GET /api/catalog/products/[slug]` — chi tiết
+- [x] `GET /api/shop/settings` — thông tin quán public (giờ mở cửa, phí ship)
 
 ### 2.3 Đặt nước online — Browse & Customize
 
-- [ ] Trang `/order`: sidebar categories + grid sản phẩm
-- [ ] Modal/sheet chi tiết món: chọn size, topping, ghi chú
-- [ ] Tùy chọn nhanh: đường (100/70/50/0%), đá (nhiều/ít/không)
-- [ ] Hiển thị giá realtime khi đổi size/topping
-- [ ] Mobile-first responsive
+- [x] Trang `/order`: sidebar categories + grid sản phẩm
+- [x] Modal/sheet chi tiết món: chọn size, topping, ghi chú
+- [x] Tùy chọn nhanh: đường (100/70/50/0%), đá (nhiều/ít/không)
+- [x] Hiển thị giá realtime khi đổi size/topping
+- [x] Mobile-first responsive
 
 ### 2.4 Giỏ hàng đồ uống
 
-- [ ] State giỏ: localStorage hoặc Zustand (`drinkCart`)
-- [ ] Trang `/cart/drinks`: list items, sửa số lượng, xóa
-- [ ] Tính subtotal, phí ship (nếu giao hàng)
-- [ ] **Giỏ tách biệt** — không mix với sản phẩm đóng gói
+- [x] State giỏ: Jotai `atomWithStorage` (`drinkCartAtom`)
+- [x] Trang `/cart/drinks`: list items, sửa số lượng, xóa
+- [x] Tính subtotal, phí ship (nếu giao hàng)
+- [x] **Giỏ tách biệt** — không mix với sản phẩm đóng gói
 
 ### 2.5 Checkout đồ uống
 
-- [ ] Chọn fulfillment: **Giao hàng** | **Đến lấy**
-- [ ] Form: tên, SĐT, địa chỉ (nếu giao), ghi chú
-- [ ] Chọn giờ đến lấy / giao (time slots — optional MVP: ASAP)
-- [ ] Payment method: COD / Chuyển khoản (MVP)
-- [ ] `POST /api/orders/drinks` — tạo `DRINK_ORDER`, channel `ONLINE`
-- [ ] Redirect → `/orders/[id]` trang theo dõi
+- [x] Chọn fulfillment: **Giao hàng** | **Đến lấy**
+- [x] Form: tên, SĐT, địa chỉ (nếu giao), ghi chú
+- [x] Chọn giờ đến lấy / giao (time slots — optional MVP: ASAP)
+- [x] Payment method: COD / Chuyển khoản (MVP)
+- [x] `POST /api/orders/drinks` — tạo `DRINK_ORDER`, channel `ONLINE`
+- [x] Redirect → `/orders/[id]` trang theo dõi
 
 ### 2.6 Shop sản phẩm đóng gói
 
-- [ ] Trang `/shop`: grid sản phẩm, filter category
-- [ ] Trang chi tiết: mô tả, chọn SKU (250g/500g), số lượng
-- [ ] Hiển thị "Hết hàng" khi stock = 0
-- [ ] Giỏ riêng: `productCart` (localStorage/Zustand)
+- [x] Trang `/shop`: grid sản phẩm, filter category
+- [x] Trang chi tiết: mô tả, chọn SKU (250g/500g), số lượng
+- [x] Hiển thị "Hết hàng" khi stock = 0
+- [x] Giỏ riêng: `productCartAtom` (Jotai `atomWithStorage`)
 
 ### 2.7 Checkout sản phẩm
 
-- [ ] Form giao hàng: tên, SĐT, địa chỉ đầy đủ
-- [ ] `POST /api/orders/products` — tạo `PRODUCT_ORDER`
-- [ ] Validate stock trước khi tạo đơn (server-side)
-- [ ] Trừ stock khi admin xác nhận (đã có ở Phase 1) — không trừ lúc checkout
+- [x] Form giao hàng: tên, SĐT, địa chỉ đầy đủ
+- [x] `POST /api/orders/products` — tạo `PRODUCT_ORDER`
+- [x] Validate stock trước khi tạo đơn (server-side)
+- [x] Trừ stock khi admin xác nhận (đã có ở Phase 1) — không trừ lúc checkout
 
 ### 2.8 Order Tracking
 
-- [ ] `GET /api/orders/[id]/public` — xem đơn bằng orderNumber + phone (guest)
-- [ ] Trang `/orders/[id]`: trạng thái, timeline, chi tiết items
-- [ ] Badge trạng thái có màu rõ ràng
-- [ ] Polling hoặc refetch 30s để cập nhật trạng thái
+- [x] `GET /api/orders/[id]/public` — xem đơn bằng orderNumber + phone (guest)
+- [x] Trang `/orders/[id]`: trạng thái, timeline, chi tiết items
+- [x] Badge trạng thái có màu rõ ràng
+- [x] Polling hoặc refetch 30s để cập nhật trạng thái
 
 ### 2.9 Customer Account (optional nhưng khuyến nghị)
 
-- [ ] Đăng ký / đăng nhập khách (role CUSTOMER) — tái dùng auth hiện có
-- [ ] `/account/orders` — lịch sử đơn của user đã login
-- [ ] Guest checkout vẫn hoạt động không cần account
+- [x] Đăng ký / đăng nhập khách (role CUSTOMER) — tái dùng auth hiện có
+- [x] `/account/orders` — lịch sử đơn của user đã login (`GET /api/orders/mine`)
+- [x] Guest checkout vẫn hoạt động không cần account
 
 ### ✅ Definition of Done — Phase 2
 
-- [ ] Khách vào web → đặt được 1 ly nước, chọn giao/lấy, tạo đơn thành công
-- [ ] Khách mua được sản phẩm đóng gói, tạo đơn thành công
-- [ ] Admin thấy đơn mới trong `/admin/orders`
-- [ ] Hai giỏ hàng hoàn toàn tách biệt
-- [ ] Mobile usable trên viewport 375px
-- [ ] `npm run lint:strict` + `check-types` pass
+- [x] Khách vào web → đặt được 1 ly nước, chọn giao/lấy, tạo đơn thành công
+- [x] Khách mua được sản phẩm đóng gói, tạo đơn thành công
+- [x] Admin thấy đơn mới trong `/admin/orders`
+- [x] Hai giỏ hàng hoàn toàn tách biệt
+- [x] Mobile usable trên viewport 375px
+- [x] `npm run lint:strict` + `check-types` pass
 
 ---
 
@@ -347,66 +347,123 @@ src/shared/utils/currency.util.ts
 
 ### 3.1 POS Shell & Auth
 
-- [ ] Layout POS: full-screen, tối ưu tablet (min 1024px)
-- [ ] Login staff → redirect `/pos`
-- [ ] Header: tên nhân viên, đồng hồ, nút logout
-- [ ] Tab chính: **Bán hàng** | **Hàng chờ** | **Đơn online**
+- [x] Layout POS: full-screen, tối ưu tablet (min 1024px)
+- [x] Login staff → redirect `/pos`
+- [x] Header: tên nhân viên, đồng hồ, nút logout
+- [x] Tab chính: **Bán hàng** | **Hàng chờ** | **Đơn online**
+
+**Files:**
+
+```
+src/modules/pos/layouts/pos-shell-layout.tsx
+src/modules/pos/components/pos-header.tsx
+src/app/(pos)/pos/page.tsx
+src/libs/auth/role-home.ts          # STAFF → /pos
+```
 
 ### 3.2 POS Catalog (read-only từ Admin)
 
-- [ ] `GET /api/pos/catalog` — categories + drinks active (reuse catalog logic)
-- [ ] Sidebar categories dọc
-- [ ] Grid món: ảnh + tên + giá min — nút lớn, dễ chạm
-- [ ] Tap món → panel tùy chọn size/topping/đường/đá
+- [x] `GET /api/pos/catalog` — categories + drinks active (reuse catalog logic)
+- [x] Sidebar categories dọc
+- [x] Grid món: ảnh + tên + giá min — nút lớn, dễ chạm
+- [x] Tap món → panel tùy chọn size/topping/đường/đá
+
+**Files:**
+
+```
+common/models/pos/
+src/app/api/pos/catalog/route.ts
+src/modules/pos/components/pos-category-nav.tsx
+src/modules/pos/components/pos-drink-card.tsx
+src/modules/pos/components/pos-drink-options-panel.tsx
+src/shared/queries/use-query-pos-catalog.ts
+```
 
 ### 3.3 POS Cart & Payment
 
-- [ ] Panel giỏ bên phải: items, tổng tiền
-- [ ] Nút +/- số lượng, xóa item
-- [ ] Ghi chú đơn, tên khách (optional)
-- [ ] Thanh toán: Tiền mặt | Chuyển khoản
-- [ ] `POST /api/pos/orders` — tạo `DRINK_ORDER`, channel `POS`
-- [ ] Sau thanh toán: clear giỏ, hiện mã đơn (#042)
+- [x] Panel giỏ bên phải: items, tổng tiền
+- [x] Nút +/- số lượng, xóa item
+- [x] Ghi chú đơn, tên khách (optional)
+- [x] Thanh toán: Tiền mặt | Chuyển khoản
+- [x] `POST /api/pos/orders` — tạo `DRINK_ORDER`, channel `POS`
+- [x] Sau thanh toán: clear giỏ, hiện mã đơn (#042)
+
+**Files:**
+
+```
+src/modules/pos/types/cart.types.ts
+src/modules/pos/hooks/use-pos-cart.ts
+src/modules/pos/components/pos-cart-panel.tsx
+src/modules/pos/components/pos-order-complete-dialog.tsx
+src/app/api/pos/orders/route.ts
+src/shared/mutations/use-create-pos-order-mutation.ts
+```
 
 ### 3.4 Kitchen Queue (Hàng chờ)
 
-- [ ] `GET /api/pos/queue` — đơn status PENDING + PREPARING + READY
-- [ ] UI queue: card đơn — mã, món, tùy chọn, ghi chú, thời gian
-- [ ] Nút: **Bắt đầu làm** → PREPARING | **Xong** → READY | **Đã giao** → COMPLETED
-- [ ] `PATCH /api/pos/orders/[id]/status`
-- [ ] Auto-refresh 10–15s (React Query `refetchInterval`)
-- [ ] Sort: FIFO (cũ nhất trước)
-- [ ] Âm thanh / notification khi có đơn online mới (optional)
+- [x] `GET /api/pos/queue` — đơn status PENDING + PREPARING + READY
+- [x] UI queue: card đơn — mã, món, tùy chọn, ghi chú, thời gian
+- [x] Nút: **Bắt đầu làm** → PREPARING | **Xong** → READY | **Đã giao** → COMPLETED
+- [x] `PATCH /api/pos/orders/[id]/status`
+- [x] Auto-refresh 10–15s (React Query `refetchInterval` 12s)
+- [x] Sort: FIFO (cũ nhất trước)
+- [–] Âm thanh / notification khi có đơn online mới (optional)
+
+**Files:**
+
+```
+src/app/api/pos/queue/route.ts
+src/app/api/pos/orders/[id]/status/route.ts
+src/modules/pos/pages/pos-queue.page.tsx
+src/modules/pos/components/pos-queue-card.tsx
+src/shared/queries/use-query-pos-queue.ts
+src/shared/mutations/use-pos-order-status-mutation.ts
+```
 
 ### 3.5 Đơn online trên POS
 
-- [ ] Tab **Đơn online**: filter `channel=ONLINE`, `type=DRINK_ORDER`
-- [ ] Hiển thị: tên khách, SĐT, giao/lấy, địa chỉ
-- [ ] Cùng flow status như queue
-- [ ] Phân biệt visual: badge "Online" vs "Tại quầy"
+- [x] Tab **Đơn online**: filter `channel=ONLINE`, `type=DRINK_ORDER`
+- [x] Hiển thị: tên khách, SĐT, giao/lấy, địa chỉ
+- [x] Cùng flow status như queue
+- [x] Phân biệt visual: badge "Online" vs "Tại quầy"
+
+**Files:**
+
+```
+src/modules/pos/pages/pos-online-orders.page.tsx
+```
 
 ### 3.6 In phiếu / Receipt
 
-- [ ] Trang print-friendly `/pos/receipt/[id]`
-- [ ] Nội dung: mã đơn, món, tùy chọn, tổng, thời gian
-- [ ] Nút "In" trigger `window.print()`
-- [ ] Auto-print sau tạo đơn (optional, configurable)
+- [x] Trang print-friendly `/pos/receipt/[id]`
+- [x] Nội dung: mã đơn, món, tùy chọn, tổng, thời gian
+- [x] Nút "In" trigger `window.print()`
+- [–] Auto-print sau tạo đơn (optional, configurable)
+
+**Files:**
+
+```
+src/app/(pos)/pos/receipt/[id]/page.tsx
+src/app/api/pos/orders/[id]/receipt/route.ts
+src/modules/pos/pages/pos-receipt.page.tsx
+src/shared/queries/use-query-pos-receipt.ts
+```
 
 ### 3.7 POS Quick Actions
 
-- [ ] Tắt/bật món hết hàng nhanh (gọi API admin drinks status — staff only)
-- [ ] Hủy đơn (chỉ PENDING, cần confirm)
-- [ ] Xem doanh thu ca làm việc đơn giản (tổng đơn POS hôm nay)
+- [–] Tắt/bật món hết hàng nhanh (gọi API admin drinks status — staff only)
+- [~] Hủy đơn (chỉ PENDING, cần confirm) — có nút Cancel, chưa có `confirm()` dialog
+- [–] Xem doanh thu ca làm việc đơn giản (tổng đơn POS hôm nay) — service sẵn, chưa wire UI
 
 ### ✅ Definition of Done — Phase 3
 
-- [ ] Staff login → bán được 1 ly tại quầy, tạo đơn POS
-- [ ] Đơn xuất hiện trong Kitchen Queue
-- [ ] Đổi trạng thái PENDING → PREPARING → READY → COMPLETED
-- [ ] Đơn online từ Customer hiện trên POS, xử lý được
-- [ ] In được phiếu order
-- [ ] Usable trên tablet 10" landscape
-- [ ] `npm run lint:strict` + `check-types` pass
+- [x] Staff login → bán được 1 ly tại quầy, tạo đơn POS
+- [x] Đơn xuất hiện trong Kitchen Queue
+- [x] Đổi trạng thái PENDING → PREPARING → READY → COMPLETED
+- [x] Đơn online từ Customer hiện trên POS, xử lý được
+- [x] In được phiếu order
+- [x] Usable trên tablet 10" landscape
+- [x] `npm run lint:strict` + `check-types` pass
 
 ---
 
@@ -643,12 +700,14 @@ GET    /api/shop/settings
 POST   /api/orders/drinks
 POST   /api/orders/products
 GET    /api/orders/[id]/public
+GET    /api/orders/mine          # logged-in customer order history
 
 # POS (staff)
 GET    /api/pos/catalog
 POST   /api/pos/orders
 GET    /api/pos/queue
 PATCH  /api/pos/orders/[id]/status
+GET    /api/pos/orders/[id]/receipt
 ```
 
 ---
@@ -658,11 +717,12 @@ PATCH  /api/pos/orders/[id]/status
 | # | Quyết định | Lý do |
 |---|-----------|-------|
 | 1 | Giỏ hàng tách: drinks / products | Khác fulfillment, trạng thái, thời gian xử lý |
-| 2 | Trừ stock khi admin xác nhận, không lúc checkout | Tránh oversell khi khách abandon cart |
-| 3 | Guest checkout OK | Giảm friction, phù hợp đặt nước nhanh |
-| 4 | POS chỉ xử lý đồ uống | Sản phẩm đóng gói do Admin xử lý |
-| 5 | `orderNumber` dạng `#042` | Dễ gọi khách tại quán |
-| 6 | Giá lưu integer (VND) | Tránh lỗi floating point |
+| 2 | Cart state: Jotai `atomWithStorage` | Theo project rule; persist localStorage tự động |
+| 3 | Trừ stock khi admin xác nhận, không lúc checkout | Tránh oversell khi khách abandon cart |
+| 4 | Guest checkout OK | Giảm friction, phù hợp đặt nước nhanh |
+| 5 | POS chỉ xử lý đồ uống | Sản phẩm đóng gói do Admin xử lý |
+| 6 | `orderNumber` dạng `#042` | Dễ gọi khách tại quán |
+| 7 | Giá lưu integer (VND) | Tránh lỗi floating point |
 
 ---
 
@@ -673,17 +733,17 @@ PATCH  /api/pos/orders/[id]/status
 | 2026-07-08 | — | Tạo implementation plan |
 | 2026-07-08 | 0 | Hoàn thành Phase 0 — schema, seed, RBAC layout guards, modules scaffold, shared UI |
 | 2026-07-09 | 1 | Hoàn thành Phase 1 — admin shell, CRUD APIs/UI, settings migration, dashboard, seed mở rộng |
-| | | |
+| 2026-07-11 | 2 | Hoàn thành Phase 2 — customer shell, public catalog APIs, drink/product carts (Jotai), checkout, order tracking, account pages, mobile nav |
+| 2026-07-11 | 3 | Hoàn thành Phase 3 — POS shell (Sell/Queue/Online tabs), catalog API, cart & payment, kitchen queue, online orders, receipt print; defer quick actions (toggle món, doanh thu ca, auto-print, notification) |
 
 ---
 
 ## Bước tiếp theo
 
-**Bắt đầu Phase 2** — Customer shell, public catalog, carts, checkout, order tracking.
+**Bắt đầu Phase 4** — Polish & Launch: thanh toán online, báo cáo nâng cao, UX/performance, security review, deploy production.
 
 ```bash
-# Khi sẵn sàng implement Phase 2:
-npm run db:migrate
-npm run db:seed
 npm run dev
+# Test E2E: Customer đặt → POS nhận → hoàn thành
+# Test E2E: POS bán tại quầy → in phiếu
 ```

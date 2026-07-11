@@ -63,6 +63,7 @@ export type OrderObject = {
   type: EOrderType;
   channel: EOrderChannel;
   status: EOrderStatus;
+  paymentMethod: EPaymentMethod | null;
   paymentStatus: EPaymentStatus;
   customerName: string | null;
   customerPhone: string | null;

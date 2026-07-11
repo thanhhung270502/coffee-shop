@@ -14,5 +14,8 @@ export * from "./use-query-catalog-product-detail";
 export * from "./use-query-catalog-products";
 export * from "./use-query-customer-orders";
 export * from "./use-query-me";
+export * from "./use-query-pos-catalog";
+export * from "./use-query-pos-queue";
+export * from "./use-query-pos-receipt";
 export * from "./use-query-public-order";
 export * from "./use-query-shop-settings";

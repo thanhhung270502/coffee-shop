@@ -4,6 +4,7 @@ import {
   EOrderChannel,
   EOrderStatus,
   EOrderType,
+  EPaymentMethod,
   EPaymentStatus,
 } from "@common/models/order";
 
@@ -20,14 +21,17 @@ import {
   findOrderById,
   findOrderByIdAndPhone,
   findOrdersByUserId,
+  findPosQueue,
   getNextOrderNumber,
   getRecentOrders,
+  getTodayPosRevenue,
   getTodayStats,
   getTopProducts,
   updateOrderStatus,
 } from "./order.repository";
 import type {
   CreateDrinkOrderInput,
+  CreatePosOrderInput,
   CreateProductOrderInput,
   UpdateOrderStatusInput,
 } from "./order.schema";
@@ -46,6 +50,7 @@ function toOrderObject(order: OrderWithItems): OrderObject {
     type: order.type as EOrderType,
     channel: order.channel as EOrderChannel,
     status: order.status as EOrderStatus,
+    paymentMethod: order.paymentMethod as EPaymentMethod | null,
     paymentStatus: order.paymentStatus as EPaymentStatus,
     customerName: order.customerName,
     customerPhone: order.customerPhone,
@@ -315,4 +320,114 @@ export async function getPublicOrderService(id: string, phone: string): Promise<
 export async function listCustomerOrdersService(userId: string): Promise<OrderObject[]> {
   const orders = await findOrdersByUserId(userId);
   return orders.map(toOrderObject);
+}
+
+export async function createPosOrderService(
+  input: CreatePosOrderInput,
+  staffId: string,
+): Promise<OrderObject> {
+  const orderItems: {
+    productId: string;
+    variantId: string;
+    quantity: number;
+    unitPrice: number;
+    note?: string;
+    options?: Record<string, string>;
+    toppings?: { toppingId: string; name: string; price: number }[];
+  }[] = [];
+
+  let subtotal = 0;
+
+  for (const item of input.items) {
+    const product = await findProductById(item.productId);
+    if (!product || product.type !== "DRINK" || !product.isActive) {
+      throw new AppError("Drink not found", 404);
+    }
+
+    const variant = product.variants.find((v) => v.id === item.variantId);
+    if (!variant) {
+      throw new AppError("Variant not found", 400);
+    }
+
+    const toppingIds = item.toppingIds ?? [];
+    const selectedToppings = product.toppings
+      .filter((pt) => toppingIds.includes(pt.topping.id) && pt.topping.isActive)
+      .map((pt) => ({
+        toppingId: pt.topping.id,
+        name: pt.topping.name,
+        price: pt.topping.price,
+      }));
+
+    if (selectedToppings.length !== toppingIds.length) {
+      throw new AppError("Invalid topping selection", 400);
+    }
+
+    const toppingTotal = selectedToppings.reduce((sum, t) => sum + t.price, 0);
+    const unitPrice = variant.price + toppingTotal;
+    subtotal += unitPrice * item.quantity;
+
+    orderItems.push({
+      productId: item.productId,
+      variantId: item.variantId,
+      quantity: item.quantity,
+      unitPrice,
+      note: item.note,
+      options: {
+        ...(item.options?.sugar ? { sugar: item.options.sugar } : {}),
+        ...(item.options?.ice ? { ice: item.options.ice } : {}),
+        variantName: variant.name,
+      },
+      toppings: selectedToppings,
+    });
+  }
+
+  const orderNumber = await getNextOrderNumber();
+
+  const order = await createOrder({
+    orderNumber,
+    type: "DRINK_ORDER",
+    channel: "POS",
+    customerName: input.customerName,
+    createdById: staffId,
+    note: input.note,
+    paymentMethod: input.paymentMethod,
+    paymentStatus: "PAID",
+    subtotal,
+    shippingFee: 0,
+    total: subtotal,
+    items: orderItems,
+  });
+
+  return toOrderObject(order);
+}
+
+export async function getPosQueueService(): Promise<OrderObject[]> {
+  const orders = await findPosQueue();
+  return orders.map(toOrderObject);
+}
+
+export async function updatePosOrderStatusService(
+  id: string,
+  input: UpdateOrderStatusInput,
+): Promise<OrderObject> {
+  const order = await findOrderById(id);
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  if (order.type !== "DRINK_ORDER") {
+    throw new AppError("Only drink orders can be managed from POS queue", 400);
+  }
+
+  const allowed = VALID_TRANSITIONS[order.status];
+  if (!allowed.includes(input.status)) {
+    throw new AppError(`Cannot transition from ${order.status} to ${input.status}`, 400);
+  }
+
+  const updated = await updateOrderStatus(id, input.status);
+  return toOrderObject(updated);
+}
+
+export async function getTodayPosRevenueService(): Promise<{ revenue: number; count: number }> {
+  return getTodayPosRevenue();
 }
