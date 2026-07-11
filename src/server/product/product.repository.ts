@@ -55,6 +55,60 @@ export async function findProductBySlug(slug: string) {
   return prisma.product.findUnique({ where: { slug } });
 }
 
+export async function findPublicDrinks(filters?: { categorySlug?: string }) {
+  return prisma.product.findMany({
+    where: {
+      type: "DRINK",
+      isActive: true,
+      category: { isActive: true },
+      ...(filters?.categorySlug ? { category: { slug: filters.categorySlug, isActive: true } } : {}),
+    },
+    include: drinkInclude,
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function findPublicDrinkBySlug(slug: string) {
+  return prisma.product.findFirst({
+    where: {
+      slug,
+      type: "DRINK",
+      isActive: true,
+      category: { isActive: true },
+    },
+    include: drinkInclude,
+  });
+}
+
+export async function findPublicPackagedProducts(filters?: { categorySlug?: string }) {
+  return prisma.product.findMany({
+    where: {
+      type: "PACKAGED",
+      isActive: true,
+      category: { isActive: true },
+      ...(filters?.categorySlug ? { category: { slug: filters.categorySlug, isActive: true } } : {}),
+    },
+    include: packagedInclude,
+    orderBy: { name: "asc" },
+  });
+}
+
+export async function findPublicPackagedProductBySlug(slug: string) {
+  return prisma.product.findFirst({
+    where: {
+      slug,
+      type: "PACKAGED",
+      isActive: true,
+      category: { isActive: true },
+    },
+    include: packagedInclude,
+  });
+}
+
+export async function findCategoryBySlug(slug: string) {
+  return prisma.category.findUnique({ where: { slug } });
+}
+
 export async function createDrink(data: {
   name: string;
   slug: string;

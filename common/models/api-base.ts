@@ -9,6 +9,9 @@ export enum APIMethod {
 export const APIBaseRoutes = {
   AUTH: "/api/auth",
   ADMIN: "/api/admin",
+  CATALOG: "/api/catalog",
+  ORDERS: "/api/orders",
+  SHOP: "/api/shop",
 } as const;
 
 export type APIDefinition = {

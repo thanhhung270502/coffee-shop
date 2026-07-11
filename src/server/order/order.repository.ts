@@ -43,6 +43,95 @@ export async function findOrderById(id: string) {
   });
 }
 
+export async function findOrderByIdAndPhone(id: string, phone: string) {
+  return prisma.order.findFirst({
+    where: { id, customerPhone: phone },
+    include: orderInclude,
+  });
+}
+
+export async function findOrdersByUserId(userId: string) {
+  return prisma.order.findMany({
+    where: { userId },
+    include: orderInclude,
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getNextOrderNumber() {
+  const count = await prisma.order.count();
+  return `#${String(count + 1).padStart(3, "0")}`;
+}
+
+type CreateOrderItemData = {
+  productId: string;
+  variantId?: string;
+  skuId?: string;
+  quantity: number;
+  unitPrice: number;
+  note?: string;
+  options?: Record<string, string>;
+  toppings?: { toppingId: string; name: string; price: number }[];
+};
+
+export async function createOrder(data: {
+  orderNumber: string;
+  type: OrderType;
+  channel: OrderChannel;
+  customerName: string;
+  customerPhone: string;
+  userId?: string;
+  fulfillment?: "DELIVERY" | "PICKUP";
+  deliveryAddress?: string;
+  shippingAddress?: string;
+  note?: string;
+  paymentMethod: "COD" | "BANK_TRANSFER" | "CASH";
+  subtotal: number;
+  shippingFee: number;
+  total: number;
+  items: CreateOrderItemData[];
+}) {
+  return prisma.order.create({
+    data: {
+      orderNumber: data.orderNumber,
+      type: data.type,
+      channel: data.channel,
+      customerName: data.customerName,
+      customerPhone: data.customerPhone,
+      userId: data.userId,
+      fulfillment: data.fulfillment,
+      deliveryAddress: data.deliveryAddress,
+      shippingAddress: data.shippingAddress,
+      note: data.note,
+      paymentMethod: data.paymentMethod,
+      subtotal: data.subtotal,
+      shippingFee: data.shippingFee,
+      total: data.total,
+      items: {
+        create: data.items.map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          skuId: item.skuId,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          note: item.note,
+          options: item.options,
+          toppings: item.toppings?.length
+            ? {
+                create: item.toppings.map((t) => ({
+                  toppingId: t.toppingId,
+                  name: t.name,
+                  price: t.price,
+                })),
+              }
+            : undefined,
+        })),
+      },
+    },
+    include: orderInclude,
+  });
+}
+
 export async function updateOrderStatus(id: string, status: OrderStatus) {
   return prisma.order.update({
     where: { id },

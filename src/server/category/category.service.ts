@@ -1,3 +1,4 @@
+import type { PublicCategoryObject } from "@common/models/catalog";
 import type { CategoryObject, EProductType } from "@common/models/category";
 
 import type { ProductType } from "@/generated/prisma";
@@ -8,6 +9,7 @@ import {
   countCategoryProducts,
   createCategory,
   deleteCategory,
+  findActiveCategories,
   findAllCategories,
   findCategoryById,
   findCategoryBySlug,
@@ -45,6 +47,17 @@ async function uniqueSlug(baseName: string, excludeId?: string): Promise<string>
 export async function listCategories(type?: ProductType): Promise<CategoryObject[]> {
   const categories = await findAllCategories(type);
   return categories.map(toCategoryObject);
+}
+
+export async function listPublicCategories(type?: ProductType): Promise<PublicCategoryObject[]> {
+  const categories = await findActiveCategories(type);
+  return categories.map((category) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    type: category.type as EProductType,
+    sortOrder: category.sortOrder,
+  }));
 }
 
 export async function createCategoryService(input: CreateCategoryInput): Promise<CategoryObject> {

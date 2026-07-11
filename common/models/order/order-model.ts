@@ -23,6 +23,14 @@ export enum EPaymentStatus {
   REFUNDED = "REFUNDED",
 }
 
+export enum EPaymentMethod {
+  CASH = "CASH",
+  BANK_TRANSFER = "BANK_TRANSFER",
+  COD = "COD",
+  VNPAY = "VNPAY",
+  MOMO = "MOMO",
+}
+
 export enum EFulfillmentType {
   DELIVERY = "DELIVERY",
   PICKUP = "PICKUP",
@@ -85,4 +93,59 @@ export type UpdateOrderStatusRequest = {
 
 export type UpdateOrderStatusResponse = {
   order: OrderObject;
+};
+
+export type DrinkOrderItemOptions = {
+  sugar?: string;
+  ice?: string;
+};
+
+export type DrinkOrderItemInput = {
+  productId: string;
+  variantId: string;
+  toppingIds?: string[];
+  quantity: number;
+  note?: string;
+  options?: DrinkOrderItemOptions;
+};
+
+export type ProductOrderItemInput = {
+  productId: string;
+  skuId: string;
+  quantity: number;
+};
+
+export type CreateDrinkOrderRequest = {
+  customerName: string;
+  customerPhone: string;
+  fulfillment: EFulfillmentType;
+  deliveryAddress?: string;
+  note?: string;
+  paymentMethod: EPaymentMethod;
+  items: DrinkOrderItemInput[];
+};
+
+export type CreateProductOrderRequest = {
+  customerName: string;
+  customerPhone: string;
+  shippingAddress: string;
+  note?: string;
+  paymentMethod: EPaymentMethod;
+  items: ProductOrderItemInput[];
+};
+
+export type CreateDrinkOrderResponse = {
+  order: OrderObject;
+};
+
+export type CreateProductOrderResponse = {
+  order: OrderObject;
+};
+
+export type GetPublicOrderResponse = {
+  order: OrderObject;
+};
+
+export type ListCustomerOrdersResponse = {
+  orders: OrderObject[];
 };

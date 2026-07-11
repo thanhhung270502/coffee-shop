@@ -1,3 +1,4 @@
+import type { PublicDrinkObject, PublicProductObject } from "@common/models/catalog";
 import type {
   DrinkObject,
   PackagedProductObject,
@@ -14,6 +15,10 @@ import {
   findPackagedProducts,
   findProductById,
   findProductBySlug,
+  findPublicDrinkBySlug,
+  findPublicDrinks,
+  findPublicPackagedProductBySlug,
+  findPublicPackagedProducts,
   replaceDrinkVariants,
   replaceProductSkus,
   replaceProductToppings,
@@ -30,6 +35,65 @@ import type {
 
 type DrinkWithRelations = Awaited<ReturnType<typeof findDrinks>>[number];
 type PackagedWithRelations = Awaited<ReturnType<typeof findPackagedProducts>>[number];
+type PublicDrinkWithRelations = Awaited<ReturnType<typeof findPublicDrinks>>[number];
+type PublicPackagedWithRelations = Awaited<ReturnType<typeof findPublicPackagedProducts>>[number];
+
+function toPublicDrinkObject(product: PublicDrinkWithRelations): PublicDrinkObject {
+  const activeToppings = product.toppings
+    .filter((pt) => pt.topping.isActive)
+    .map((pt) => ({
+      id: pt.topping.id,
+      name: pt.topping.name,
+      price: pt.topping.price,
+    }));
+  const minPrice = product.variants.length
+    ? Math.min(...product.variants.map((v) => v.price))
+    : 0;
+
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    image: product.image,
+    categoryId: product.categoryId,
+    categoryName: product.category.name,
+    categorySlug: product.category.slug,
+    variants: product.variants.map((v) => ({ id: v.id, name: v.name, price: v.price })),
+    toppings: activeToppings,
+    minPrice,
+  };
+}
+
+function toPublicProductObject(product: PublicPackagedWithRelations): PublicProductObject {
+  const skus = product.skus.map((s) => ({
+    id: s.id,
+    label: s.label,
+    sku: s.sku,
+    price: s.price,
+    stock: s.stock,
+  }));
+  const inStockSkus = skus.filter((s) => s.stock > 0);
+  const minPrice = inStockSkus.length
+    ? Math.min(...inStockSkus.map((s) => s.price))
+    : skus.length
+      ? Math.min(...skus.map((s) => s.price))
+      : 0;
+
+  return {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    image: product.image,
+    categoryId: product.categoryId,
+    categoryName: product.category.name,
+    categorySlug: product.category.slug,
+    skus,
+    minPrice,
+    inStock: skus.some((s) => s.stock > 0),
+  };
+}
 
 function toDrinkObject(product: DrinkWithRelations): DrinkObject {
   return {
@@ -256,4 +320,34 @@ export async function updateProductStockService(
 
   await updateSkuStock(input.skuId, input.stock);
   return getPackagedProductById(productId);
+}
+
+export async function listPublicDrinks(categorySlug?: string): Promise<PublicDrinkObject[]> {
+  const drinks = await findPublicDrinks(
+    categorySlug ? { categorySlug } : undefined,
+  );
+  return drinks.map(toPublicDrinkObject);
+}
+
+export async function getPublicDrinkBySlug(slug: string): Promise<PublicDrinkObject> {
+  const drink = await findPublicDrinkBySlug(slug);
+  if (!drink) {
+    throw new AppError("Drink not found", 404);
+  }
+  return toPublicDrinkObject(drink);
+}
+
+export async function listPublicProducts(categorySlug?: string): Promise<PublicProductObject[]> {
+  const products = await findPublicPackagedProducts(
+    categorySlug ? { categorySlug } : undefined,
+  );
+  return products.map(toPublicProductObject);
+}
+
+export async function getPublicProductBySlug(slug: string): Promise<PublicProductObject> {
+  const product = await findPublicPackagedProductBySlug(slug);
+  if (!product) {
+    throw new AppError("Product not found", 404);
+  }
+  return toPublicProductObject(product);
 }

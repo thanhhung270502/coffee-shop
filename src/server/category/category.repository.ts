@@ -11,6 +11,16 @@ export async function findAllCategories(type?: ProductType) {
   });
 }
 
+export async function findActiveCategories(type?: ProductType) {
+  return prisma.category.findMany({
+    where: {
+      isActive: true,
+      ...(type ? { type } : {}),
+    },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+  });
+}
+
 export async function findCategoryById(id: string) {
   return prisma.category.findUnique({
     where: { id },
