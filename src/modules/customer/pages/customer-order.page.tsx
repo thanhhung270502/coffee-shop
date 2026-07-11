@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { PublicDrinkObject } from "@common/models/catalog";
 import { EProductType } from "@common/models/category";
 
-import { Button, Skeleton, Typography } from "@/shared/components";
+import { Button, Separator, Skeleton, Typography } from "@/shared/components";
 import { useQueryCatalogCategories, useQueryCatalogDrinks } from "@/shared/queries";
 
 import { DrinkCard } from "../components/drink-card";
@@ -15,7 +15,9 @@ export function CustomerOrderPage() {
   const [selectedDrink, setSelectedDrink] = useState<PublicDrinkObject | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
-  const { data: categoriesData } = useQueryCatalogCategories(EProductType.DRINK);
+  const { data: categoriesData, isLoading: categoriesLoading } = useQueryCatalogCategories(
+    EProductType.DRINK
+  );
   const { data: drinksData, isLoading } = useQueryCatalogDrinks(categorySlug);
 
   const handleSelectDrink = (drink: PublicDrinkObject) => {
@@ -33,26 +35,38 @@ export function CustomerOrderPage() {
             Categories
           </Typography>
           <div className="flex flex-wrap gap-2 lg:flex-col">
-            <Button
-              type="button"
-              variant={!categorySlug ? "primary" : "secondary-gray"}
-              size="sm"
-              onClick={() => setCategorySlug(undefined)}
-            >
-              All
-            </Button>
-            {categoriesData?.categories.map((category) => (
-              <Button
-                key={category.id}
-                type="button"
-                variant={categorySlug === category.slug ? "primary" : "secondary-gray"}
-                size="sm"
-                onClick={() => setCategorySlug(category.slug)}
-              >
-                {category.name}
-              </Button>
-            ))}
+            {categoriesLoading ? (
+              <>
+                <Skeleton className="h-8 w-12 rounded-full" />
+                <Skeleton className="h-8 w-20 rounded-full" />
+                <Skeleton className="h-8 w-16 rounded-full" />
+                <Skeleton className="h-8 w-24 rounded-full" />
+              </>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant={!categorySlug ? "primary" : "secondary-gray"}
+                  size="sm"
+                  onClick={() => setCategorySlug(undefined)}
+                >
+                  All
+                </Button>
+                {categoriesData?.categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    type="button"
+                    variant={categorySlug === category.slug ? "primary" : "secondary-gray"}
+                    size="sm"
+                    onClick={() => setCategorySlug(category.slug)}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </>
+            )}
           </div>
+          <Separator className="mt-4 lg:hidden" />
         </aside>
 
         <div className="flex-1">

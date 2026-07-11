@@ -1,17 +1,50 @@
 "use client";
 
+import { EOrderStatus } from "@common/models/order";
 import Link from "next/link";
 
 import { Badge, Button, Card, CardContent, Skeleton, Typography } from "@/shared/components";
 import { useQueryCustomerOrders, useQueryMe } from "@/shared/queries";
 import { formatCurrency } from "@/shared/utils/currency.util";
 
+const STATUS_LABELS: Record<EOrderStatus, string> = {
+  [EOrderStatus.PENDING]: "Pending",
+  [EOrderStatus.CONFIRMED]: "Confirmed",
+  [EOrderStatus.PREPARING]: "Preparing",
+  [EOrderStatus.READY]: "Ready for Pickup",
+  [EOrderStatus.COMPLETED]: "Completed",
+  [EOrderStatus.CANCELLED]: "Cancelled",
+};
+
+function getStatusVariant(status: EOrderStatus): "default" | "success" | "warning" | "danger" {
+  switch (status) {
+    case EOrderStatus.PENDING:
+      return "warning";
+    case EOrderStatus.CONFIRMED:
+    case EOrderStatus.PREPARING:
+      return "default";
+    case EOrderStatus.READY:
+    case EOrderStatus.COMPLETED:
+      return "success";
+    case EOrderStatus.CANCELLED:
+      return "danger";
+    default:
+      return "default";
+  }
+}
+
 export function CustomerOrderHistoryPage() {
   const { data: meData, isLoading: meLoading } = useQueryMe();
   const { data, isLoading } = useQueryCustomerOrders(Boolean(meData?.user));
 
   if (meLoading) {
-    return <Skeleton className="h-32 w-full rounded-lg" />;
+    return (
+      <div className="mx-auto max-w-2xl space-y-4">
+        <Skeleton className="h-8 w-36 rounded-lg" />
+        <Skeleton className="h-28 w-full rounded-lg" />
+        <Skeleton className="h-28 w-full rounded-lg" />
+      </div>
+    );
   }
 
   if (!meData?.user) {
@@ -33,11 +66,22 @@ export function CustomerOrderHistoryPage() {
       <Typography variant="heading-md">Order History</Typography>
 
       {isLoading ? (
-        <Skeleton className="h-32 w-full rounded-lg" />
+        <div className="space-y-4">
+          <Skeleton className="h-28 w-full rounded-lg" />
+          <Skeleton className="h-28 w-full rounded-lg" />
+          <Skeleton className="h-28 w-full rounded-lg" />
+        </div>
       ) : data?.orders.length === 0 ? (
-        <Typography variant="body-md" color="secondary">
-          No orders yet.
-        </Typography>
+        <div className="space-y-2 text-center">
+          <Typography variant="body-md" color="secondary">
+            No orders yet.
+          </Typography>
+          <Link href="/order">
+            <Button variant="secondary-gray" size="sm">
+              Start ordering
+            </Button>
+          </Link>
+        </div>
       ) : (
         <div className="space-y-4">
           {data?.orders.map((order) => (
@@ -45,10 +89,13 @@ export function CustomerOrderHistoryPage() {
               <CardContent className="space-y-2">
                 <div className="flex items-center justify-between gap-4">
                   <Typography variant="heading-sm">{order.orderNumber}</Typography>
-                  <Badge>{order.status}</Badge>
+                  <Badge variant={getStatusVariant(order.status)}>
+                    {STATUS_LABELS[order.status]}
+                  </Badge>
                 </div>
                 <Typography variant="body-sm" color="secondary">
-                  {new Date(order.createdAt).toLocaleString()} · {order.items.length} item(s)
+                  {new Date(order.createdAt).toLocaleString()} · {order.items.length} item
+                  {order.items.length !== 1 ? "s" : ""}
                 </Typography>
                 <div className="flex items-center justify-between">
                   <Typography variant="body-md">{formatCurrency(order.total)}</Typography>

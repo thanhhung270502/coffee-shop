@@ -3,6 +3,7 @@ export * from "./customer-header";
 export * from "./drink-card";
 export * from "./drink-options-sheet";
 export * from "./fulfillment-selector";
+export * from "./mobile-nav";
 export * from "./order-status-timeline";
 export * from "./product-card";
 export * from "./product-detail-sheet";

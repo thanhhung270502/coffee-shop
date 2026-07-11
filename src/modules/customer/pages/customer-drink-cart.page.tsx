@@ -97,15 +97,19 @@ export function CustomerDrinkCartPage() {
           </div>
           <div className="flex justify-between">
             <Typography variant="body-sm" color="secondary">
-              Delivery fee (if applicable)
+              Delivery fee
             </Typography>
             <Typography variant="body-sm" color="secondary">
-              from {formatCurrency(shippingFee)}
+              {shippingFee > 0 ? `+${formatCurrency(shippingFee)} if delivery` : "Free for pickup"}
             </Typography>
+          </div>
+          <div className="flex justify-between border-t border-zinc-200 pt-2">
+            <Typography variant="heading-sm">Total (pickup)</Typography>
+            <Typography variant="heading-sm">{formatCurrency(subtotal)}</Typography>
           </div>
           <Link href="/checkout/drinks" className="block pt-2">
             <Button variant="primary" className="w-full">
-              Checkout
+              Proceed to Checkout
             </Button>
           </Link>
         </CardContent>

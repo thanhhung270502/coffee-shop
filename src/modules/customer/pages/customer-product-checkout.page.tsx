@@ -3,14 +3,7 @@
 import { EPaymentMethod } from "@common/models/order";
 import Link from "next/link";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  RHFInput,
-  RHFTextarea,
-  Typography,
-} from "@/shared/components";
+import { Button, Card, CardContent, RHFInput, RHFTextarea, Typography } from "@/shared/components";
 import { FormProvider } from "@/shared/providers";
 import { useQueryShopSettings } from "@/shared/queries";
 import { formatCurrency } from "@/shared/utils/currency.util";
@@ -21,6 +14,7 @@ export function CustomerProductCheckoutPage() {
   const { methods, onSubmit, isSubmitting, items } = useProductCheckout();
   const { data: settingsData } = useQueryShopSettings();
 
+  const paymentMethod = methods.watch("paymentMethod");
   const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
   const shippingFee = settingsData?.settings.baseShipping ?? 0;
   const total = subtotal + shippingFee;
@@ -43,6 +37,24 @@ export function CustomerProductCheckoutPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <Typography variant="heading-md">Product Checkout</Typography>
 
+      <Card>
+        <CardContent className="space-y-3">
+          <Typography variant="heading-sm">Order Summary</Typography>
+          <div className="space-y-2">
+            {items.map((item) => (
+              <div key={item.id} className="flex justify-between gap-4">
+                <Typography variant="body-sm">
+                  {item.quantity}× {item.productName} ({item.skuLabel})
+                </Typography>
+                <Typography variant="body-sm" className="shrink-0">
+                  {formatCurrency(item.unitPrice * item.quantity)}
+                </Typography>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <FormProvider formMethods={methods} onSubmit={onSubmit} className="space-y-6">
         <Card>
           <CardContent className="space-y-4">
@@ -54,18 +66,14 @@ export function CustomerProductCheckoutPage() {
               label="Shipping Address"
               required
             />
-            <RHFTextarea name="note" control={methods.control} label="Order Note" rows={3} />
+            <RHFTextarea name="note" control={methods.control} label="Order Note" rows={2} />
 
             <div className="space-y-2">
               <Typography variant="heading-sm">Payment Method</Typography>
               <div className="flex flex-wrap gap-2">
                 <Button
                   type="button"
-                  variant={
-                    methods.watch("paymentMethod") === EPaymentMethod.COD
-                      ? "primary"
-                      : "secondary-gray"
-                  }
+                  variant={paymentMethod === EPaymentMethod.COD ? "primary" : "secondary-gray"}
                   size="sm"
                   onClick={() => methods.setValue("paymentMethod", EPaymentMethod.COD)}
                 >
@@ -74,19 +82,34 @@ export function CustomerProductCheckoutPage() {
                 <Button
                   type="button"
                   variant={
-                    methods.watch("paymentMethod") === EPaymentMethod.BANK_TRANSFER
-                      ? "primary"
-                      : "secondary-gray"
+                    paymentMethod === EPaymentMethod.BANK_TRANSFER ? "primary" : "secondary-gray"
                   }
                   size="sm"
-                  onClick={() =>
-                    methods.setValue("paymentMethod", EPaymentMethod.BANK_TRANSFER)
-                  }
+                  onClick={() => methods.setValue("paymentMethod", EPaymentMethod.BANK_TRANSFER)}
                 >
                   Bank Transfer
                 </Button>
               </div>
             </div>
+
+            {paymentMethod === EPaymentMethod.BANK_TRANSFER ? (
+              <div className="space-y-2 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                <Typography variant="heading-sm">Bank Transfer Details</Typography>
+                <Typography variant="body-sm" color="secondary">
+                  After placing your order, please transfer the exact total to the shop&apos;s bank
+                  account. Contact us via phone for account details.
+                </Typography>
+                {settingsData?.settings.phone ? (
+                  <Typography variant="body-sm">
+                    <span className="font-medium">Shop phone:</span> {settingsData.settings.phone}
+                  </Typography>
+                ) : null}
+                <Typography variant="body-xs" color="secondary">
+                  Use your order number as the transfer reference. Your order will be confirmed
+                  after payment verification.
+                </Typography>
+              </div>
+            ) : null}
           </CardContent>
         </Card>
 

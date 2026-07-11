@@ -1,7 +1,8 @@
 "use client";
 
-import { Coffee,ShoppingBag } from "iconsax-reactjs";
+import { Coffee, ShoppingBag } from "iconsax-reactjs";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Badge } from "@/shared/components";
 import { useQueryShopSettings } from "@/shared/queries";
@@ -16,6 +17,7 @@ const navLinks = [
 ];
 
 export function CustomerHeader() {
+  const pathname = usePathname();
   const { data } = useQueryShopSettings();
   const { itemCount: drinkCount } = useDrinkCart();
   const { itemCount: productCount } = useProductCart();
@@ -28,22 +30,28 @@ export function CustomerHeader() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname.startsWith(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium transition-colors ${
+                  isActive ? "text-brand-main font-semibold" : "text-zinc-600 hover:text-zinc-900"
+                }`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2">
           <Link
             href="/cart/drinks"
             className="relative inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
-            aria-label="Drink cart"
+            aria-label={`Drink cart${drinkCount > 0 ? `, ${drinkCount} items` : ""}`}
           >
             <Coffee size={18} />
             {drinkCount > 0 ? (
@@ -55,7 +63,7 @@ export function CustomerHeader() {
           <Link
             href="/cart/products"
             className="relative inline-flex items-center gap-1 rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-700 hover:bg-zinc-50"
-            aria-label="Product cart"
+            aria-label={`Product cart${productCount > 0 ? `, ${productCount} items` : ""}`}
           >
             <ShoppingBag size={18} />
             {productCount > 0 ? (

@@ -1,12 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { EFulfillmentType, EPaymentMethod } from "@common/models/order";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { useCreateDrinkOrderMutation } from "@/shared/mutations";
+import { useQueryMe } from "@/shared/queries";
 
 import { useDrinkCart } from "./use-drink-cart";
 
@@ -35,6 +38,7 @@ export function useDrinkCheckout() {
   const router = useRouter();
   const { items, clearCart } = useDrinkCart();
   const createOrder = useCreateDrinkOrderMutation();
+  const { data: meData } = useQueryMe();
 
   const methods = useForm<DrinkCheckoutFormData>({
     resolver: zodResolver(drinkCheckoutSchema),
@@ -48,31 +52,51 @@ export function useDrinkCheckout() {
     },
   });
 
+  useEffect(() => {
+    const user = meData?.user;
+    if (user) {
+      methods.reset({
+        customerName: user.name ?? "",
+        customerPhone: user.phone ?? "",
+        fulfillment: EFulfillmentType.PICKUP,
+        deliveryAddress: "",
+        note: "",
+        paymentMethod: EPaymentMethod.COD,
+      });
+    }
+  }, [meData, methods]);
+
   const onSubmit = methods.handleSubmit(async (values) => {
     if (items.length === 0) return;
 
-    const result = await createOrder.mutateAsync({
-      customerName: values.customerName,
-      customerPhone: values.customerPhone,
-      fulfillment: values.fulfillment,
-      deliveryAddress: values.deliveryAddress,
-      note: values.note,
-      paymentMethod: values.paymentMethod,
-      items: items.map((item) => ({
-        productId: item.productId,
-        variantId: item.variantId,
-        toppingIds: item.toppingIds,
-        quantity: item.quantity,
-        note: item.note || undefined,
-        options: {
-          sugar: item.sugar,
-          ice: item.ice,
-        },
-      })),
-    });
+    try {
+      const result = await createOrder.mutateAsync({
+        customerName: values.customerName,
+        customerPhone: values.customerPhone,
+        fulfillment: values.fulfillment,
+        deliveryAddress: values.deliveryAddress,
+        note: values.note,
+        paymentMethod: values.paymentMethod,
+        items: items.map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          toppingIds: item.toppingIds,
+          quantity: item.quantity,
+          note: item.note || undefined,
+          options: {
+            sugar: item.sugar,
+            ice: item.ice,
+          },
+        })),
+      });
 
-    clearCart();
-    router.push(`/orders/${result.order.id}?phone=${encodeURIComponent(values.customerPhone)}`);
+      clearCart();
+      router.push(`/orders/${result.order.id}?phone=${encodeURIComponent(values.customerPhone)}`);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to place order. Please try again.";
+      toast.error(message);
+    }
   });
 
   return {

@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { EFulfillmentType, EPaymentMethod } from "@common/models/order";
 import { useSearchParams } from "next/navigation";
 
-import { Card, CardContent, Skeleton, Typography } from "@/shared/components";
+import { Badge, Card, CardContent, Skeleton, Typography } from "@/shared/components";
 import { useQueryPublicOrder } from "@/shared/queries";
 import { formatCurrency } from "@/shared/utils/currency.util";
 
@@ -12,29 +14,72 @@ type CustomerOrderTrackingPageProps = {
   orderId: string;
 };
 
+const FULFILLMENT_LABELS: Record<EFulfillmentType, string> = {
+  [EFulfillmentType.DELIVERY]: "Delivery",
+  [EFulfillmentType.PICKUP]: "Pickup",
+};
+
+const PAYMENT_LABELS: Record<EPaymentMethod, string> = {
+  [EPaymentMethod.COD]: "Cash on Delivery",
+  [EPaymentMethod.BANK_TRANSFER]: "Bank Transfer",
+  [EPaymentMethod.CASH]: "Cash",
+  [EPaymentMethod.VNPAY]: "VNPay",
+  [EPaymentMethod.MOMO]: "MoMo",
+};
+
+function useLastUpdated(dataUpdatedAt: number) {
+  const [secondsAgo, setSecondsAgo] = useState(0);
+
+  useEffect(() => {
+    const update = () => {
+      setSecondsAgo(Math.floor((Date.now() - dataUpdatedAt) / 1000));
+    };
+    update();
+    const interval = setInterval(update, 5000);
+    return () => clearInterval(interval);
+  }, [dataUpdatedAt]);
+
+  if (secondsAgo < 10) return "just now";
+  if (secondsAgo < 60) return `${secondsAgo}s ago`;
+  return `${Math.floor(secondsAgo / 60)}m ago`;
+}
+
 export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPageProps) {
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone") ?? "";
 
-  const { data, isLoading, error } = useQueryPublicOrder(orderId, phone);
+  const { data, isLoading, error, dataUpdatedAt } = useQueryPublicOrder(orderId, phone);
+  const lastUpdated = useLastUpdated(dataUpdatedAt);
 
   if (!phone) {
     return (
-      <Typography variant="body-md" color="secondary">
-        Phone number is required to view this order.
-      </Typography>
+      <div className="mx-auto max-w-2xl space-y-4 text-center">
+        <Typography variant="heading-md">Order Tracking</Typography>
+        <Typography variant="body-md" color="secondary">
+          Phone number is required to view this order.
+        </Typography>
+      </div>
     );
   }
 
   if (isLoading) {
-    return <Skeleton className="h-64 w-full rounded-lg" />;
+    return (
+      <div className="mx-auto max-w-2xl space-y-4">
+        <Skeleton className="h-8 w-48 rounded-lg" />
+        <Skeleton className="h-64 w-full rounded-lg" />
+        <Skeleton className="h-48 w-full rounded-lg" />
+      </div>
+    );
   }
 
   if (error || !data?.order) {
     return (
-      <Typography variant="body-md" color="secondary">
-        Order not found. Please check your order ID and phone number.
-      </Typography>
+      <div className="mx-auto max-w-2xl space-y-4 text-center">
+        <Typography variant="heading-md">Order Not Found</Typography>
+        <Typography variant="body-md" color="secondary">
+          Order not found. Please check your order ID and phone number.
+        </Typography>
+      </div>
     );
   }
 
@@ -42,16 +87,72 @@ export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPage
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <Typography variant="heading-md">Order {order.orderNumber}</Typography>
-        <Typography variant="body-sm" color="secondary">
-          Placed on {new Date(order.createdAt).toLocaleString()}
-        </Typography>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <Typography variant="heading-md">Order {order.orderNumber}</Typography>
+          <Typography variant="body-sm" color="secondary">
+            Placed on {new Date(order.createdAt).toLocaleString()}
+          </Typography>
+        </div>
+        <div className="text-right">
+          <Badge variant="default" className="text-xs">
+            Live
+          </Badge>
+          <Typography variant="body-xs" color="secondary" className="mt-1">
+            Updated {lastUpdated}
+          </Typography>
+        </div>
       </div>
 
       <Card>
         <CardContent>
           <OrderStatusTimeline status={order.status} />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent className="space-y-3">
+          <Typography variant="heading-sm">Order Info</Typography>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+            {order.fulfillment ? (
+              <>
+                <Typography variant="body-sm" color="secondary">
+                  Fulfillment
+                </Typography>
+                <Typography variant="body-sm">{FULFILLMENT_LABELS[order.fulfillment]}</Typography>
+              </>
+            ) : null}
+            <Typography variant="body-sm" color="secondary">
+              Payment
+            </Typography>
+            <Typography variant="body-sm">
+              {order.items[0] ? PAYMENT_LABELS[EPaymentMethod.COD] : "—"}
+            </Typography>
+            {order.deliveryAddress ? (
+              <>
+                <Typography variant="body-sm" color="secondary">
+                  Delivery Address
+                </Typography>
+                <Typography variant="body-sm">{order.deliveryAddress}</Typography>
+              </>
+            ) : null}
+            {order.shippingAddress ? (
+              <>
+                <Typography variant="body-sm" color="secondary">
+                  Shipping Address
+                </Typography>
+                <Typography variant="body-sm">{order.shippingAddress}</Typography>
+              </>
+            ) : null}
+            {order.note ? (
+              <>
+                <Typography variant="body-sm" color="secondary">
+                  Note
+                </Typography>
+                <Typography variant="body-sm">{order.note}</Typography>
+              </>
+            ) : null}
+          </div>
         </CardContent>
       </Card>
 
@@ -62,7 +163,7 @@ export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPage
             <div key={item.id} className="flex justify-between gap-4 border-b border-zinc-100 pb-3">
               <div>
                 <Typography variant="body-md">
-                  {item.quantity}x {item.productName}
+                  {item.quantity}× {item.productName}
                 </Typography>
                 {item.variantName ? (
                   <Typography variant="body-sm" color="secondary">
@@ -80,7 +181,7 @@ export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPage
                   </Typography>
                 ) : null}
               </div>
-              <Typography variant="body-md">
+              <Typography variant="body-md" className="shrink-0">
                 {formatCurrency(item.unitPrice * item.quantity)}
               </Typography>
             </div>

@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { useAtom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
+import { toast } from "sonner";
 
 import type { ProductCartItem } from "../types";
 
@@ -17,38 +18,37 @@ export function useProductCart() {
     (item: Omit<ProductCartItem, "id">) => {
       setItems((prev) => {
         const existing = prev.find(
-          (cartItem) => cartItem.productId === item.productId && cartItem.skuId === item.skuId,
+          (cartItem) => cartItem.productId === item.productId && cartItem.skuId === item.skuId
         );
 
         if (existing) {
           return prev.map((cartItem) =>
             cartItem.id === existing.id
               ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
-              : cartItem,
+              : cartItem
           );
         }
 
         return [...prev, { ...item, id: crypto.randomUUID() }];
       });
+      toast.success(`${item.productName} added to cart`);
     },
-    [setItems],
+    [setItems]
   );
 
   const removeItem = useCallback(
     (id: string) => {
       setItems((prev) => prev.filter((item) => item.id !== id));
     },
-    [setItems],
+    [setItems]
   );
 
   const updateQuantity = useCallback(
     (id: string, quantity: number) => {
       if (quantity < 1) return;
-      setItems((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, quantity } : item)),
-      );
+      setItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantity } : item)));
     },
-    [setItems],
+    [setItems]
   );
 
   const clearCart = useCallback(() => {
@@ -57,13 +57,10 @@ export function useProductCart() {
 
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
-    [items],
+    [items]
   );
 
-  const itemCount = useMemo(
-    () => items.reduce((sum, item) => sum + item.quantity, 0),
-    [items],
-  );
+  const itemCount = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
 
   return {
     items,

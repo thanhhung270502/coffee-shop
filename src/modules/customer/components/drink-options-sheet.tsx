@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { PublicDrinkObject } from "@common/models/catalog";
+import { Coffee } from "iconsax-reactjs";
 
 import {
   Button,
@@ -33,6 +34,7 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
   const [sugar, setSugar] = useState("100%");
   const [ice, setIce] = useState("Normal");
   const [note, setNote] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   const selectedVariant = drink?.variants.find((v) => v.id === variantId) ?? drink?.variants[0];
   const effectiveVariantId = selectedVariant?.id ?? "";
@@ -45,6 +47,8 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
     return selectedVariant.price + toppingTotal;
   }, [drink, selectedVariant, toppingIds]);
 
+  const totalPrice = unitPrice * quantity;
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (nextOpen && drink) {
       setVariantId(drink.variants[0]?.id ?? "");
@@ -52,6 +56,7 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
       setSugar("100%");
       setIce("Normal");
       setNote("");
+      setQuantity(1);
     }
     onOpenChange(nextOpen);
   };
@@ -72,7 +77,7 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
       ice,
       note,
       unitPrice,
-      quantity: 1,
+      quantity,
     });
 
     onOpenChange(false);
@@ -82,7 +87,16 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
+      <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto" showCloseButton>
+        {drink.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={drink.image} alt={drink.name} className="h-40 w-full object-cover" />
+        ) : (
+          <div className="flex h-24 items-center justify-center bg-zinc-100 text-zinc-300">
+            <Coffee size={36} variant="Bold" />
+          </div>
+        )}
+
         <SheetHeader>
           <SheetTitle>{drink.name}</SheetTitle>
         </SheetHeader>
@@ -105,7 +119,7 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
                   size="sm"
                   onClick={() => setVariantId(variant.id)}
                 >
-                  {variant.name} - {formatCurrency(variant.price)}
+                  {variant.name} — {formatCurrency(variant.price)}
                 </Button>
               ))}
             </div>
@@ -121,9 +135,7 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
                       checked={toppingIds.includes(topping.id)}
                       onCheckedChange={(checked) => {
                         setToppingIds((prev) =>
-                          checked
-                            ? [...prev, topping.id]
-                            : prev.filter((id) => id !== topping.id),
+                          checked ? [...prev, topping.id] : prev.filter((id) => id !== topping.id)
                         );
                       }}
                     />
@@ -171,17 +183,50 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
           </div>
 
           <div className="space-y-2">
+            <Typography variant="heading-sm">Quantity</Typography>
+            <div className="flex items-center gap-3">
+              <Button
+                type="button"
+                variant="secondary-gray"
+                size="sm"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+              >
+                -
+              </Button>
+              <Typography variant="body-md" className="w-6 text-center">
+                {quantity}
+              </Typography>
+              <Button
+                type="button"
+                variant="secondary-gray"
+                size="sm"
+                onClick={() => setQuantity((q) => q + 1)}
+              >
+                +
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Typography variant="heading-sm">Note</Typography>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Special instructions..."
-              rows={3}
+              rows={2}
             />
           </div>
 
           <div className="flex items-center justify-between border-t border-zinc-200 pt-4">
-            <Typography variant="heading-sm">{formatCurrency(unitPrice)}</Typography>
+            <div>
+              <Typography variant="heading-sm">{formatCurrency(totalPrice)}</Typography>
+              {quantity > 1 && (
+                <Typography variant="body-xs" color="secondary">
+                  {formatCurrency(unitPrice)} × {quantity}
+                </Typography>
+              )}
+            </div>
             <Button type="button" variant="primary" onClick={handleAddToCart}>
               Add to Cart
             </Button>
