@@ -23,3 +23,13 @@ export type APIDefinition = {
   responseBody: unknown;
   buildUrlPath: (...args: string[]) => string;
 };
+
+export interface PaginationQueryParams {
+  limit: number;
+  offset: number;
+}
+
+export interface PageableResponse<T> {
+  total_record: number;
+  data: T[];
+}

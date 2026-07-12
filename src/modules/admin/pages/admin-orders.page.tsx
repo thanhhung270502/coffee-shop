@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { OrderObject } from "@common/models/order";
+import type { EOrderChannel, EOrderType, OrderObject } from "@common/models/order";
 import type { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 
@@ -13,27 +13,21 @@ import { useQueryAdminOrders } from "@/shared/queries/use-query-admin-orders";
 import { cn } from "@/shared/utils";
 import { formatCurrency } from "@/shared/utils/currency.util";
 
-const FILTER_TABS = [
-  { label: "All", filters: {} },
-  { label: "Drinks", filters: { type: "DRINK_ORDER" } },
-  { label: "Products", filters: { type: "PRODUCT_ORDER" } },
-  { label: "Online", filters: { channel: "ONLINE" } },
-  { label: "POS", filters: { channel: "POS" } },
-] as const;
-
-const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Pending",
-  CONFIRMED: "Confirmed",
-  PREPARING: "Preparing",
-  READY: "Ready",
-  COMPLETED: "Completed",
-  CANCELLED: "Cancelled",
-};
+import { FILTER_TABS, STATUS_LABELS } from "../../admin-order/constants";
 
 export function AdminOrdersPage() {
   const [activeTab, setActiveTab] = useState(0);
-  const filters = FILTER_TABS[activeTab].filters;
-  const { data, isLoading } = useQueryAdminOrders(filters);
+  const tabFilters = FILTER_TABS[activeTab].filters;
+  const payload = useMemo(
+    () => ({
+      limit: 50,
+      offset: 0,
+      types: "type" in tabFilters ? [tabFilters.type as EOrderType] : undefined,
+      channels: "channel" in tabFilters ? [tabFilters.channel as EOrderChannel] : undefined,
+    }),
+    [tabFilters],
+  );
+  const { data, isLoading } = useQueryAdminOrders(payload);
 
   const columns = useMemo<ColumnDef<OrderObject>[]>(
     () => [
@@ -98,7 +92,7 @@ export function AdminOrdersPage() {
 
       <div className="rounded-xl border border-primary bg-white p-4">
         <Table
-          data={data?.orders ?? []}
+          data={data?.data ?? []}
           columns={columns}
           isLoading={isLoading}
           emptyState={<Typography variant="body-sm" color="secondary">No orders yet</Typography>}

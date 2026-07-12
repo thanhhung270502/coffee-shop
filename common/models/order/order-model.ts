@@ -1,3 +1,5 @@
+import { PageableResponse, PaginationQueryParams } from "../api-base";
+
 export enum EOrderType {
   DRINK_ORDER = "DRINK_ORDER",
   PRODUCT_ORDER = "PRODUCT_ORDER",
@@ -80,9 +82,16 @@ export type OrderObject = {
   updatedAt: string;
 };
 
-export type ListOrdersResponse = {
-  orders: OrderObject[];
-};
+export type ListOrdersResponse = PageableResponse<OrderObject>;
+
+export interface ListOrdersPayload extends PaginationQueryParams {
+  search?: string;
+  types?: EOrderType[];
+  statuses?: EOrderStatus[];
+  channels?: EOrderChannel[];
+  fromDate?: string;
+  toDate?: string;
+}
 
 export type GetOrderResponse = {
   order: OrderObject;

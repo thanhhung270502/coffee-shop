@@ -30,6 +30,7 @@
   color: var(--color-neutral-300);
 }
 
+/* Text Brand Colors */
 @utility text-brand-primary {
   color: var(--color-brand-purple-900);
 }
@@ -63,12 +64,32 @@
 }
 
 @utility text-blue-primary {
-  color: var(--color-blue-600);
+  color: var(--color-blue-900);
 }
 
 @utility text-blue-secondary {
   color: var(--color-blue-700);
 }
+
+@utility text-blue-tertiary {
+  color: var(--color-blue-600);
+}
+
+@utility text-blue-tertiary-alt {
+  color: var(--color-blue-600);
+}
+
+@utility text-blue-quaternary {
+  color: var(--color-blue-500);
+}
+
+/* @utility text-blue-primary {
+  color: var(--color-blue-600);
+}
+
+@utility text-blue-secondary {
+  color: var(--color-blue-700);
+} */
 
 @utility text-teal-primary {
   color: var(--color-teal-600);

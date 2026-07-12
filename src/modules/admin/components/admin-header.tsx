@@ -5,6 +5,7 @@ import { LogoutCurve } from "iconsax-reactjs";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/shared/components/button";
+import { PageTitle } from "@/shared/components/page-title";
 import { Typography } from "@/shared/components/typography";
 import { useLogoutMutation } from "@/shared/mutations";
 import { useQueryMe } from "@/shared/queries";
@@ -23,10 +24,11 @@ export function AdminHeader() {
   };
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-primary bg-white px-6">
-      <Typography variant="heading-sm" weight="semibold">
+    <header className="border-primary flex h-20 items-center justify-between border-b bg-white px-6">
+      <PageTitle />
+      {/* <Typography variant="heading-sm" weight="semibold">
         Coffee Shop Admin
-      </Typography>
+      </Typography> */}
 
       <div className="flex items-center gap-4">
         {data?.user && (

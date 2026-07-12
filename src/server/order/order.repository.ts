@@ -10,30 +10,59 @@ const orderInclude = {
   },
 } as const;
 
-export async function findAllOrders(filters?: {
-  type?: OrderType;
-  status?: OrderStatus;
-  channel?: OrderChannel;
+type OrderListFilters = {
+  search?: string;
+  types?: OrderType[];
+  statuses?: OrderStatus[];
+  channels?: OrderChannel[];
   from?: Date;
   to?: Date;
-}) {
-  return prisma.order.findMany({
-    where: {
-      ...(filters?.type ? { type: filters.type } : {}),
-      ...(filters?.status ? { status: filters.status } : {}),
-      ...(filters?.channel ? { channel: filters.channel } : {}),
-      ...(filters?.from || filters?.to
-        ? {
-            createdAt: {
-              ...(filters.from ? { gte: filters.from } : {}),
-              ...(filters.to ? { lte: filters.to } : {}),
-            },
-          }
-        : {}),
-    },
-    include: orderInclude,
-    orderBy: { createdAt: "desc" },
-  });
+  limit: number;
+  offset: number;
+};
+
+function buildOrderListWhere(filters?: Omit<OrderListFilters, "limit" | "offset">) {
+  const search = filters?.search?.trim();
+
+  return {
+    ...(search
+      ? {
+          OR: [
+            { orderNumber: { contains: search, mode: "insensitive" as const } },
+            { customerName: { contains: search, mode: "insensitive" as const } },
+            { customerPhone: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+    ...(filters?.types?.length ? { type: { in: filters.types } } : {}),
+    ...(filters?.statuses?.length ? { status: { in: filters.statuses } } : {}),
+    ...(filters?.channels?.length ? { channel: { in: filters.channels } } : {}),
+    ...(filters?.from || filters?.to
+      ? {
+          createdAt: {
+            ...(filters.from ? { gte: filters.from } : {}),
+            ...(filters.to ? { lte: filters.to } : {}),
+          },
+        }
+      : {}),
+  };
+}
+
+export async function findOrders(filters: OrderListFilters) {
+  const where = buildOrderListWhere(filters);
+
+  const [total_record, orders] = await Promise.all([
+    prisma.order.count({ where }),
+    prisma.order.findMany({
+      where,
+      include: orderInclude,
+      orderBy: { createdAt: "desc" },
+      skip: filters.offset,
+      take: filters.limit,
+    }),
+  ]);
+
+  return { total_record, orders };
 }
 
 export async function findOrderById(id: string) {

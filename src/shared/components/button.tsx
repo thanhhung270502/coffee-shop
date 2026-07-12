@@ -17,9 +17,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: [
-          "bg-brand-main text-white border border-brand-main",
-          "hover:bg-brand-solid-hover hover:border-brand-solid-hover",
-          "active:bg-brand-main active:border-brand-main",
+          "bg-blue-main text-white border border-blue-main",
+          "hover:bg-blue-solid-hover hover:border-blue-solid-hover",
+          "active:bg-blue-main active:border-blue-main",
           "disabled:bg-disabled disabled:text-placeholder-subtle disabled:border-secondary disabled:shadow-xs",
         ],
         gradient: [
@@ -35,9 +35,9 @@ const buttonVariants = cva(
           "disabled:bg-disabled disabled:text-placeholder-subtle disabled:border-secondary disabled:shadow-xs",
         ],
         "secondary-color": [
-          "bg-transparent text-brand-tertiary border border-brand-main",
-          "hover:bg-brand-primary hover:text-brand-purple-800 hover:border-brand-main",
-          "active:bg-transparent active:text-brand-tertiary active:border-brand-main",
+          "bg-transparent text-brand-tertiary border border-blue-main",
+          "hover:bg-blue-primary hover:text-brand-purple-800 hover:border-blue-main",
+          "active:bg-transparent active:text-brand-tertiary active:border-blue-main",
           "disabled:bg-disabled disabled:text-placeholder-subtle disabled:border-secondary disabled:shadow-xs",
         ],
         "tertiary-gray": [
@@ -48,7 +48,7 @@ const buttonVariants = cva(
         ],
         "tertiary-color": [
           "bg-transparent text-brand-tertiary border-0",
-          "hover:bg-brand-primary hover:text-brand-section",
+          "hover:bg-blue-primary hover:text-brand-section",
           "active:bg-transparent active:text-brand-tertiary",
           "disabled:bg-transparent disabled:text-placeholder-subtle",
         ],

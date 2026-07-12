@@ -8,16 +8,17 @@ import type {
   GetOrderResponse,
   GetPublicOrderResponse,
   ListCustomerOrdersResponse,
+  ListOrdersPayload,
   ListOrdersResponse,
   UpdateOrderStatusRequest,
   UpdateOrderStatusResponse,
 } from "./order-model";
 
 export const API_ADMIN_ORDERS: APIDefinition = {
-  method: APIMethod.GET,
+  method: APIMethod.POST,
   baseUrl: APIBaseRoutes.ADMIN,
   subUrl: "/orders",
-  requestBody: {} as Record<string, never>,
+  requestBody: {} as ListOrdersPayload,
   responseBody: {} as ListOrdersResponse,
   buildUrlPath: () => `${APIBaseRoutes.ADMIN}/orders`,
 };

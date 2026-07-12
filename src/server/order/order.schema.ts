@@ -81,7 +81,21 @@ export const createPosOrderSchema = z.object({
   items: z.array(posOrderItemSchema).min(1, "At least one item is required"),
 });
 
+export const listOrdersSchema = z.object({
+  limit: z.number().int().min(1, "Limit must be at least 1").max(100, "Limit cannot exceed 100"),
+  offset: z.number().int().min(0, "Offset must be at least 0"),
+  search: z.string().optional(),
+  types: z.array(z.enum(["DRINK_ORDER", "PRODUCT_ORDER"])).optional(),
+  statuses: z
+    .array(z.enum(["PENDING", "CONFIRMED", "PREPARING", "READY", "COMPLETED", "CANCELLED"]))
+    .optional(),
+  channels: z.array(z.enum(["ONLINE", "POS"])).optional(),
+  fromDate: z.string().optional(),
+  toDate: z.string().optional(),
+});
+
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
+export type ListOrdersInput = z.infer<typeof listOrdersSchema>;
 export type CreateDrinkOrderInput = z.infer<typeof createDrinkOrderSchema>;
 export type CreateProductOrderInput = z.infer<typeof createProductOrderSchema>;
 export type CreatePosOrderInput = z.infer<typeof createPosOrderSchema>;

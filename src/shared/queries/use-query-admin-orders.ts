@@ -1,22 +1,26 @@
 "use client";
 
-import type { ListOrdersResponse } from "@common/models/order";
+import type { ListOrdersPayload, ListOrdersResponse } from "@common/models/order";
 import { API_ADMIN_ORDERS } from "@common/models/order";
 import { useQuery } from "@tanstack/react-query";
 
-import { getRequest } from "@/libs/api-client";
+import { postRequest } from "@/libs/api-client";
+
+import { ADMIN_ORDERS_KEYS } from "../constants";
+import { QueryProps } from "../types/query-client";
 
 export const ADMIN_ORDERS_QUERY_KEY = ["admin", "orders"] as const;
 
-export function useQueryAdminOrders(filters?: Record<string, string | undefined>) {
+type UseQueryAdminOrdersProps = QueryProps<ListOrdersResponse, ListOrdersPayload>;
+export function useQueryAdminOrders(props: UseQueryAdminOrdersProps) {
+  const { input } = props;
   return useQuery({
-    queryKey: [...ADMIN_ORDERS_QUERY_KEY, filters ?? {}],
+    queryKey: ADMIN_ORDERS_KEYS.list(input),
     queryFn: async () => {
-      const data = await getRequest({
+      return await postRequest<ListOrdersPayload>({
         path: API_ADMIN_ORDERS.buildUrlPath(),
-        params: filters,
+        data: input,
       });
-      return data as ListOrdersResponse;
     },
   });
 }

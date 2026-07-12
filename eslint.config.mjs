@@ -27,6 +27,7 @@ const eslintConfig = defineConfig([
       "react-hooks/incompatible-library": "off",
       // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
+      "react-hooks/purity": "off",
       "@typescript-eslint/no-explicit-any": "off",
     },
   },

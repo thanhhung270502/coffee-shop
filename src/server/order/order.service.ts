@@ -17,9 +17,9 @@ import { findOrCreateSettings } from "../settings/settings.repository";
 import {
   createOrder,
   deductStockForOrder,
-  findAllOrders,
   findOrderById,
   findOrderByIdAndPhone,
+  findOrders,
   findOrdersByUserId,
   findPosQueue,
   getNextOrderNumber,
@@ -36,7 +36,7 @@ import type {
   UpdateOrderStatusInput,
 } from "./order.schema";
 
-type OrderWithItems = Awaited<ReturnType<typeof findAllOrders>>[number];
+type OrderWithItems = NonNullable<Awaited<ReturnType<typeof findOrderById>>>;
 
 function getItemOptions(options: unknown): Record<string, string> | null {
   if (!options || typeof options !== "object") return null;
@@ -97,21 +97,31 @@ const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   CANCELLED: [],
 };
 
-export async function listOrders(filters?: {
-  type?: OrderType;
-  status?: OrderStatus;
-  channel?: OrderChannel;
-  from?: string;
-  to?: string;
-}): Promise<OrderObject[]> {
-  const orders = await findAllOrders({
-    type: filters?.type,
-    status: filters?.status,
-    channel: filters?.channel,
-    from: filters?.from ? new Date(filters.from) : undefined,
-    to: filters?.to ? new Date(filters.to) : undefined,
+export async function listOrders(input: {
+  limit: number;
+  offset: number;
+  search?: string;
+  types?: OrderType[];
+  statuses?: OrderStatus[];
+  channels?: OrderChannel[];
+  fromDate?: string;
+  toDate?: string;
+}) {
+  const { total_record, orders } = await findOrders({
+    limit: input.limit,
+    offset: input.offset,
+    search: input.search,
+    types: input.types,
+    statuses: input.statuses,
+    channels: input.channels,
+    from: input.fromDate ? new Date(input.fromDate) : undefined,
+    to: input.toDate ? new Date(input.toDate) : undefined,
   });
-  return orders.map(toOrderObject);
+
+  return {
+    total_record,
+    data: orders.map(toOrderObject),
+  };
 }
 
 export async function getOrderById(id: string): Promise<OrderObject> {
