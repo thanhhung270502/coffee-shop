@@ -1,6 +1,7 @@
 import type { Icon } from "iconsax-reactjs";
 import {
   Category,
+  Chart,
   Coffee,
   Element3,
   People,
@@ -22,6 +23,7 @@ export const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { label: "Drinks", href: "/admin/drinks", icon: Coffee },
   { label: "Packaged Products", href: "/admin/products", icon: ShoppingBag },
   { label: "Orders", href: "/admin/orders", icon: ShoppingCart },
+  { label: "Reports", href: "/admin/reports", icon: Chart },
   { label: "Staff", href: "/admin/staff", icon: People },
   { label: "Settings", href: "/admin/settings", icon: Setting2 },
 ];

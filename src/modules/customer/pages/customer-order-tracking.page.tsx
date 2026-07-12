@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { EFulfillmentType, EPaymentMethod } from "@common/models/order";
+import { EFulfillmentType, EPaymentMethod, EPaymentStatus } from "@common/models/order";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
-import { Badge, Card, CardContent, Skeleton, Typography } from "@/shared/components";
+import { Badge, Button, Card, CardContent, Skeleton, Typography } from "@/shared/components";
+import { useInitiateMoMoPaymentMutation } from "@/shared/mutations";
 import { useQueryPublicOrder } from "@/shared/queries";
 import { formatCurrency } from "@/shared/utils/currency.util";
 
@@ -47,6 +49,16 @@ function useLastUpdated(dataUpdatedAt: number) {
 export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPageProps) {
   const searchParams = useSearchParams();
   const phone = searchParams.get("phone") ?? "";
+  const initiateMoMoPayment = useInitiateMoMoPaymentMutation();
+
+  const handleMoMoPay = async () => {
+    try {
+      const result = await initiateMoMoPayment.mutateAsync(orderId);
+      window.location.assign(result.payUrl);
+    } catch {
+      toast.error("Failed to initiate MoMo payment. Please try again.");
+    }
+  };
 
   const { data, isLoading, error, dataUpdatedAt } = useQueryPublicOrder(orderId, phone);
   const lastUpdated = useLastUpdated(dataUpdatedAt);
@@ -126,7 +138,7 @@ export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPage
               Payment
             </Typography>
             <Typography variant="body-sm">
-              {order.items[0] ? PAYMENT_LABELS[EPaymentMethod.COD] : "—"}
+              {order.paymentMethod ? PAYMENT_LABELS[order.paymentMethod] : "—"}
             </Typography>
             {order.deliveryAddress ? (
               <>
@@ -207,6 +219,26 @@ export function CustomerOrderTrackingPage({ orderId }: CustomerOrderTrackingPage
           </div>
         </CardContent>
       </Card>
+
+      {order.paymentMethod === EPaymentMethod.MOMO &&
+      order.paymentStatus === EPaymentStatus.PENDING ? (
+        <Card>
+          <CardContent className="space-y-3">
+            <Typography variant="heading-sm">Complete Your Payment</Typography>
+            <Typography variant="body-sm" color="secondary">
+              Your order is awaiting MoMo payment. Click below to pay now.
+            </Typography>
+            <Button
+              variant="primary"
+              className="w-full"
+              loading={initiateMoMoPayment.isPending}
+              onClick={handleMoMoPay}
+            >
+              Pay with MoMo
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { PublicDrinkObject } from "@common/models/catalog";
 import { Coffee } from "iconsax-reactjs";
+import Image from "next/image";
 
 import {
   Button,
@@ -89,8 +90,9 @@ export function DrinkOptionsSheet({ drink, open, onOpenChange }: DrinkOptionsShe
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto" showCloseButton>
         {drink.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={drink.image} alt={drink.name} className="h-40 w-full object-cover" />
+          <div className="relative h-40 w-full">
+            <Image src={drink.image} alt={drink.name} fill className="object-cover" sizes="100vw" />
+          </div>
         ) : (
           <div className="flex h-24 items-center justify-center bg-zinc-100 text-zinc-300">
             <Coffee size={36} variant="Bold" />

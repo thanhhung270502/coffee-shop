@@ -111,6 +111,14 @@ export function CustomerDrinkCheckoutPage() {
                 >
                   Bank Transfer
                 </Button>
+                <Button
+                  type="button"
+                  variant={paymentMethod === EPaymentMethod.MOMO ? "primary" : "secondary-gray"}
+                  size="sm"
+                  onClick={() => methods.setValue("paymentMethod", EPaymentMethod.MOMO)}
+                >
+                  MoMo
+                </Button>
               </div>
             </div>
 
@@ -129,6 +137,16 @@ export function CustomerDrinkCheckoutPage() {
                 <Typography variant="body-xs" color="secondary">
                   Use your order number as the transfer reference. Your order will be confirmed
                   after payment verification.
+                </Typography>
+              </div>
+            ) : null}
+
+            {paymentMethod === EPaymentMethod.MOMO ? (
+              <div className="space-y-2 rounded-lg border border-pink-200 bg-pink-50 p-4">
+                <Typography variant="heading-sm">Pay with MoMo</Typography>
+                <Typography variant="body-sm" color="secondary">
+                  You will be redirected to MoMo to complete payment. Your order will be confirmed
+                  automatically after successful payment.
                 </Typography>
               </div>
             ) : null}

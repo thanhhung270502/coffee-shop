@@ -86,7 +86,7 @@ export async function createOrder(data: {
   deliveryAddress?: string;
   shippingAddress?: string;
   note?: string;
-  paymentMethod: "COD" | "BANK_TRANSFER" | "CASH";
+  paymentMethod: "COD" | "BANK_TRANSFER" | "CASH" | "MOMO";
   paymentStatus?: "PENDING" | "PAID";
   subtotal: number;
   shippingFee: number;

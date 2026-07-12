@@ -14,6 +14,7 @@ import {
   API_ADMIN_STAFF_RESET_PASSWORD,
 } from "@common/models/staff";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { patchRequest, postRequest } from "@/libs/api-client";
 import { ADMIN_STAFF_QUERY_KEY } from "@/shared/queries/use-query-admin-staff";
@@ -26,7 +27,11 @@ export function useCreateStaffMutation() {
         path: API_ADMIN_STAFF_CREATE.buildUrlPath(),
         data,
       })) as CreateStaffResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_STAFF_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_STAFF_QUERY_KEY });
+      toast.success("Staff account created");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to create staff account"),
   });
 }
 
@@ -38,7 +43,11 @@ export function useUpdateStaffMutation() {
         path: API_ADMIN_STAFF_BY_ID.buildUrlPath(id),
         data,
       })) as UpdateStaffResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_STAFF_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_STAFF_QUERY_KEY });
+      toast.success("Staff updated");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to update staff"),
   });
 }
 
@@ -50,6 +59,10 @@ export function useResetStaffPasswordMutation() {
         path: API_ADMIN_STAFF_RESET_PASSWORD.buildUrlPath(id),
         data,
       })) as ResetStaffPasswordResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_STAFF_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_STAFF_QUERY_KEY });
+      toast.success("Password reset successfully");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to reset password"),
   });
 }

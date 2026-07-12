@@ -3,11 +3,13 @@ import { ZodError } from "zod";
 import { jsonError, jsonOk, zodErrorResponse } from "@/libs/auth/http";
 import { getSessionUser } from "@/libs/auth/session";
 import { AppError } from "@/libs/errors";
+import { rateLimit } from "@/libs/rate-limit";
 import { createDrinkOrderSchema } from "@/server/order/order.schema";
 import { createDrinkOrderService } from "@/server/order/order.service";
 
 export async function POST(request: Request) {
   try {
+    await rateLimit(request, "orders:drinks", { requests: 10, window: "1 m" });
     const input = createDrinkOrderSchema.parse(await request.json());
     const user = await getSessionUser();
     const order = await createDrinkOrderService(input, user?.id);

@@ -4,6 +4,8 @@ export * from "./use-query-admin-drinks";
 export * from "./use-query-admin-order-detail";
 export * from "./use-query-admin-orders";
 export * from "./use-query-admin-products";
+export * from "./use-query-admin-report-top-products";
+export * from "./use-query-admin-revenue";
 export * from "./use-query-admin-settings";
 export * from "./use-query-admin-staff";
 export * from "./use-query-admin-toppings";

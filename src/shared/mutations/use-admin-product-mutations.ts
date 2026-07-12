@@ -14,6 +14,7 @@ import {
   API_ADMIN_PRODUCT_UPDATE,
 } from "@common/models/product";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { patchRequest, postRequest } from "@/libs/api-client";
 import { ADMIN_PRODUCTS_QUERY_KEY } from "@/shared/queries/use-query-admin-products";
@@ -26,7 +27,11 @@ export function useCreateProductMutation() {
         path: API_ADMIN_PRODUCT_CREATE.buildUrlPath(),
         data,
       })) as CreatePackagedProductResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY });
+      toast.success("Product created");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to create product"),
   });
 }
 
@@ -38,7 +43,11 @@ export function useUpdateProductMutation() {
         path: API_ADMIN_PRODUCT_UPDATE.buildUrlPath(id),
         data,
       })) as UpdatePackagedProductResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY });
+      toast.success("Product updated");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to update product"),
   });
 }
 
@@ -50,6 +59,10 @@ export function useUpdateProductStockMutation() {
         path: API_ADMIN_PRODUCT_STOCK.buildUrlPath(id),
         data,
       })) as UpdateProductStockResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_PRODUCTS_QUERY_KEY });
+      toast.success("Stock updated");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to update stock"),
   });
 }

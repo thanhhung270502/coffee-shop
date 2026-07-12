@@ -1,5 +1,7 @@
 "use client";
 
+import { Toaster } from "sonner";
+
 import { AdminHeader } from "../components/admin-header";
 import { AdminSidebar, useAdminSidebar } from "../components/admin-sidebar";
 
@@ -17,6 +19,7 @@ export function AdminShellLayout({ children }: AdminShellLayoutProps) {
         <AdminHeader />
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

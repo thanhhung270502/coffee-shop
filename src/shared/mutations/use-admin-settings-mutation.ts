@@ -6,6 +6,7 @@ import type {
 } from "@common/models/settings";
 import { API_ADMIN_SETTINGS_UPDATE } from "@common/models/settings";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { patchRequest } from "@/libs/api-client";
 import { ADMIN_SETTINGS_QUERY_KEY } from "@/shared/queries/use-query-admin-settings";
@@ -18,6 +19,10 @@ export function useUpdateSettingsMutation() {
         path: API_ADMIN_SETTINGS_UPDATE.buildUrlPath(),
         data,
       })) as UpdateShopSettingsResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_SETTINGS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_SETTINGS_QUERY_KEY });
+      toast.success("Settings saved");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to save settings"),
   });
 }

@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useCreateDrinkOrderMutation } from "@/shared/mutations";
+import { useCreateDrinkOrderMutation, useInitiateMoMoPaymentMutation } from "@/shared/mutations";
 import { useQueryMe } from "@/shared/queries";
 
 import { useDrinkCart } from "./use-drink-cart";
@@ -38,6 +38,7 @@ export function useDrinkCheckout() {
   const router = useRouter();
   const { items, clearCart } = useDrinkCart();
   const createOrder = useCreateDrinkOrderMutation();
+  const initiateMoMoPayment = useInitiateMoMoPaymentMutation();
   const { data: meData } = useQueryMe();
 
   const methods = useForm<DrinkCheckoutFormData>({
@@ -90,6 +91,13 @@ export function useDrinkCheckout() {
         })),
       });
 
+      if (values.paymentMethod === EPaymentMethod.MOMO) {
+        const payment = await initiateMoMoPayment.mutateAsync(result.order.id);
+        clearCart();
+        window.location.assign(payment.payUrl);
+        return;
+      }
+
       clearCart();
       router.push(`/orders/${result.order.id}?phone=${encodeURIComponent(values.customerPhone)}`);
     } catch (err) {
@@ -102,7 +110,7 @@ export function useDrinkCheckout() {
   return {
     methods,
     onSubmit,
-    isSubmitting: methods.formState.isSubmitting || createOrder.isPending,
+    isSubmitting: methods.formState.isSubmitting || createOrder.isPending || initiateMoMoPayment.isPending,
     items,
   };
 }

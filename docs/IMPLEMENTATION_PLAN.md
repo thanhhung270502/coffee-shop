@@ -55,7 +55,7 @@
 | 1 | Admin | `[x]` | 32/32 |
 | 2 | Customer | `[x]` | 28/28 |
 | 3 | Staff (POS) | `[x]` | 28/32 |
-| 4 | Polish & Launch | `[ ]` | 0/12 |
+| 4 | Polish & Launch | `[~]` | 10/12 |
 
 ---
 
@@ -475,29 +475,31 @@ src/shared/queries/use-query-pos-receipt.ts
 
 ### 4.1 Thanh toán online
 
-- [ ] Tích hợp VNPay hoặc MoMo (chọn 1)
-- [ ] Webhook xác nhận thanh toán
-- [ ] Cập nhật `paymentStatus` → PAID
+- [x] Tích hợp MoMo (sandbox + production config)
+- [x] Webhook xác nhận thanh toán (`POST /api/webhooks/momo`, HMAC verify)
+- [x] Cập nhật `paymentStatus` → PAID + `status` → CONFIRMED khi IPN OK
 
 ### 4.2 Báo cáo Admin nâng cao
 
-- [ ] Doanh thu theo ngày/tuần/tháng
-- [ ] Chart đơn giản (doanh thu 7 ngày)
-- [ ] Export CSV đơn hàng
+- [x] Doanh thu theo ngày/tuần/tháng (`GET /api/admin/reports/revenue`)
+- [x] Chart đơn giản (doanh thu 7 ngày, Recharts AreaChart trên dashboard)
+- [x] Export CSV đơn hàng (`GET /api/admin/reports/orders/export`)
+- [x] Trang `/admin/reports` với date range picker + chart + top products
 
 ### 4.3 UX & Performance
 
-- [ ] Loading skeletons cho catalog
-- [ ] Error boundaries + toast notifications
-- [ ] Image optimization (next/image)
-- [ ] 404 / error pages cho từng section
+- [x] Loading skeletons cho admin dashboard (stat cards, chart, top products)
+- [x] Error boundaries (`error.tsx`) cho admin, customer, POS + global
+- [x] Toast notifications (`sonner`) cho tất cả admin mutations
+- [x] Image optimization (`next/image`) cho customer drink/product sheets
+- [x] 404 page toàn cục (`src/app/not-found.tsx`)
 
 ### 4.4 Security & Production
 
-- [ ] Rate limit API auth + checkout
-- [ ] Validate env production (.env.example đầy đủ)
+- [x] Rate limit API auth + checkout (Upstash Redis, sliding window)
+- [x] Validate env production (`.env.example` đầy đủ tất cả biến)
 - [ ] CORS / cookie secure flags production
-- [ ] Review RBAC toàn bộ API routes
+- [x] Review RBAC toàn bộ API routes (audit pass)
 
 ### 4.5 Launch Checklist
 
@@ -506,7 +508,10 @@ src/shared/queries/use-query-pos-receipt.ts
 - [ ] Test E2E: Customer đặt → POS nhận → hoàn thành
 - [ ] Test E2E: POS bán tại quầy → in phiếu
 - [ ] Test E2E: Customer mua hạt → Admin xử lý → trừ stock
+- [ ] Test E2E: Customer thanh toán MoMo → webhook → đơn CONFIRMED
 - [ ] Deploy production (Vercel + Neon)
+- [ ] Set production env vars trên Vercel dashboard
+- [ ] MoMo: chuyển từ sandbox sang production credentials
 - [ ] Domain + SSL
 
 ### ✅ Definition of Done — Phase 4
@@ -735,6 +740,7 @@ GET    /api/pos/orders/[id]/receipt
 | 2026-07-09 | 1 | Hoàn thành Phase 1 — admin shell, CRUD APIs/UI, settings migration, dashboard, seed mở rộng |
 | 2026-07-11 | 2 | Hoàn thành Phase 2 — customer shell, public catalog APIs, drink/product carts (Jotai), checkout, order tracking, account pages, mobile nav |
 | 2026-07-11 | 3 | Hoàn thành Phase 3 — POS shell (Sell/Queue/Online tabs), catalog API, cart & payment, kitchen queue, online orders, receipt print; defer quick actions (toggle món, doanh thu ca, auto-print, notification) |
+| 2026-07-11 | 4 | Phase 4 (10/12): MoMo payment (prisma migration, payment domain, IPN webhook, checkout + tracking UI); Advanced reports (revenue series API, top products, CSV export, Recharts dashboard + /admin/reports page); UX polish (admin toasts, error boundaries, next/image, 404 pages); Security (Upstash rate limiting on auth + orders, complete .env.example, RBAC audit) |
 
 ---
 

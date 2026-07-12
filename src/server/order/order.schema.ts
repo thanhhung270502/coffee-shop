@@ -32,7 +32,7 @@ export const createDrinkOrderSchema = z
     fulfillment: z.enum(["DELIVERY", "PICKUP"]),
     deliveryAddress: z.string().optional(),
     note: z.string().optional(),
-    paymentMethod: z.enum(["COD", "BANK_TRANSFER", "CASH"]),
+    paymentMethod: z.enum(["COD", "BANK_TRANSFER", "CASH", "MOMO"]),
     items: z.array(drinkOrderItemSchema).min(1, "At least one item is required"),
   })
   .superRefine((data, ctx) => {
@@ -56,7 +56,7 @@ export const createProductOrderSchema = z.object({
   customerPhone: z.string().min(1, "Phone is required"),
   shippingAddress: z.string().min(1, "Shipping address is required"),
   note: z.string().optional(),
-  paymentMethod: z.enum(["COD", "BANK_TRANSFER", "CASH"]),
+  paymentMethod: z.enum(["COD", "BANK_TRANSFER", "CASH", "MOMO"]),
   items: z.array(productOrderItemSchema).min(1, "At least one item is required"),
 });
 

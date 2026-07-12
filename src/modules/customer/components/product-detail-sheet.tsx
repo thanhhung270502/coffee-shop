@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { PublicProductObject } from "@common/models/catalog";
 import { Box } from "iconsax-reactjs";
+import Image from "next/image";
 
 import {
   Badge,
@@ -66,8 +67,9 @@ export function ProductDetailSheet({ product, open, onOpenChange }: ProductDetai
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto" showCloseButton>
         {product.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.image} alt={product.name} className="h-40 w-full object-cover" />
+          <div className="relative h-40 w-full">
+            <Image src={product.image} alt={product.name} fill className="object-cover" sizes="100vw" />
+          </div>
         ) : (
           <div className="flex h-24 items-center justify-center bg-zinc-100 text-zinc-300">
             <Box size={36} variant="Bold" />

@@ -14,6 +14,7 @@ import {
   API_ADMIN_DRINK_UPDATE,
 } from "@common/models/product";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { patchRequest, postRequest } from "@/libs/api-client";
 import { ADMIN_DRINKS_QUERY_KEY } from "@/shared/queries/use-query-admin-drinks";
@@ -26,7 +27,11 @@ export function useCreateDrinkMutation() {
         path: API_ADMIN_DRINK_CREATE.buildUrlPath(),
         data,
       })) as CreateDrinkResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_DRINKS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_DRINKS_QUERY_KEY });
+      toast.success("Drink created");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to create drink"),
   });
 }
 
@@ -38,7 +43,11 @@ export function useUpdateDrinkMutation() {
         path: API_ADMIN_DRINK_UPDATE.buildUrlPath(id),
         data,
       })) as UpdateDrinkResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_DRINKS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_DRINKS_QUERY_KEY });
+      toast.success("Drink updated");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to update drink"),
   });
 }
 
@@ -50,6 +59,10 @@ export function useUpdateDrinkStatusMutation() {
         path: API_ADMIN_DRINK_STATUS.buildUrlPath(id),
         data,
       })) as UpdateDrinkStatusResponse,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ADMIN_DRINKS_QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ADMIN_DRINKS_QUERY_KEY });
+      toast.success("Drink status updated");
+    },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to update drink status"),
   });
 }

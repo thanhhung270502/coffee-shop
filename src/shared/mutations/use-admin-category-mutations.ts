@@ -13,6 +13,7 @@ import {
   API_ADMIN_CATEGORY_DELETE,
 } from "@common/models/category";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { deleteRequest, patchRequest, postRequest } from "@/libs/api-client";
 import { ADMIN_CATEGORIES_QUERY_KEY } from "@/shared/queries/use-query-admin-categories";
@@ -29,7 +30,9 @@ export function useCreateCategoryMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_QUERY_KEY });
+      toast.success("Category created");
     },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to create category"),
   });
 }
 
@@ -45,7 +48,9 @@ export function useUpdateCategoryMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_QUERY_KEY });
+      toast.success("Category updated");
     },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to update category"),
   });
 }
 
@@ -60,6 +65,8 @@ export function useDeleteCategoryMutation() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_QUERY_KEY });
+      toast.success("Category deleted");
     },
+    onError: (error: Error) => toast.error(error.message ?? "Failed to delete category"),
   });
 }
