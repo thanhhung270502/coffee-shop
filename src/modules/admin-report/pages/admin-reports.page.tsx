@@ -1,13 +1,9 @@
 "use client";
 
 import { PageHeader } from "@/shared/components/page-header";
+import { RevenueChart } from "@/shared/components/revenue-chart";
 
-import {
-  ReportsSummaryCards,
-  ReportsToolbar,
-  RevenueChart,
-  TopProductsTable,
-} from "../components";
+import { ReportsSummaryCards, ReportsToolbar, TopProductsTable } from "../components";
 import { useAdminReports } from "../hooks/use-admin-reports";
 import { useAdminReportsRequest } from "../hooks/use-admin-reports-request";
 import { useExportOrders } from "../hooks/use-export-orders";
@@ -30,7 +26,11 @@ export const AdminReportsPage = () => {
           totalOrders={data.totalOrders}
           isLoading={data.revenueLoading}
         />
-        <RevenueChart series={data.revenueSeries} isLoading={data.revenueLoading} />
+        <RevenueChart
+          title="Revenue Chart"
+          series={data.revenueSeries}
+          isLoading={data.revenueLoading}
+        />
         <TopProductsTable products={data.topProducts} isLoading={data.topProductsLoading} />
       </div>
     </div>

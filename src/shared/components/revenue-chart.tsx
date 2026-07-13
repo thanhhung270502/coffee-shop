@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import type { RevenuePoint } from "@common/models/report";
 import {
   Area,
@@ -16,15 +17,20 @@ import { Typography } from "@/shared/components/typography";
 import { formatCurrency } from "@/shared/utils/currency.util";
 
 type RevenueChartProps = {
+  title: string;
   series: RevenuePoint[];
   isLoading: boolean;
+  gradientId?: string;
 };
 
-export const RevenueChart = ({ series, isLoading }: RevenueChartProps) => {
+export const RevenueChart = ({ title, series, isLoading, gradientId }: RevenueChartProps) => {
+  const defaultGradientId = useId();
+  const resolvedGradientId = gradientId ?? defaultGradientId;
+
   return (
     <div className="p-4xl rounded-xl border border-primary bg-white">
       <Typography variant="heading-sm" weight="semibold" className="mb-4xl">
-        Revenue Chart
+        {title}
       </Typography>
       {isLoading ? (
         <Skeleton className="h-64 w-full" />
@@ -36,7 +42,7 @@ export const RevenueChart = ({ series, isLoading }: RevenueChartProps) => {
         <ResponsiveContainer width="100%" height={256}>
           <AreaChart data={series} margin={{ top: 4, right: 16, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="revenueGradientReport" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id={resolvedGradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
                 <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
               </linearGradient>
@@ -57,7 +63,7 @@ export const RevenueChart = ({ series, isLoading }: RevenueChartProps) => {
               dataKey="revenue"
               stroke="#6366f1"
               strokeWidth={2}
-              fill="url(#revenueGradientReport)"
+              fill={`url(#${resolvedGradientId})`}
               name="Revenue"
             />
           </AreaChart>

@@ -19,6 +19,7 @@ export * from "./menu-item";
 export * from "./popover";
 export * from "./radio";
 export * from "./radio-group";
+export * from "./revenue-chart";
 export * from "./select";
 export * from "./separator";
 export * from "./sheet";

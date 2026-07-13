@@ -1,5 +1,6 @@
 export * from "./use-query-admin-categories";
 export * from "./use-query-admin-dashboard";
+export * from "./use-query-admin-dashboard-top-products";
 export * from "./use-query-admin-drinks";
 export * from "./use-query-admin-order-detail";
 export * from "./use-query-admin-orders";
