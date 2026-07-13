@@ -20,4 +20,5 @@ export enum SearchParams {
   Channel = "channel",
   From = "from",
   To = "to",
+  CategoryId = "categoryId",
 }

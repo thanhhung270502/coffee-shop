@@ -1,3 +1,4 @@
+import type { PageableResponse, PaginationQueryParams } from "../api-base";
 import type { EProductType } from "../category/category-model";
 
 export type ProductVariantObject = {
@@ -46,7 +47,12 @@ export type PackagedProductObject = {
   totalStock: number;
 };
 
-export type ListDrinksResponse = { drinks: DrinkObject[] };
+export interface ListDrinksPayload extends PaginationQueryParams {
+  search?: string;
+  categoryId?: string;
+}
+
+export type ListDrinksResponse = PageableResponse<DrinkObject>;
 export type GetDrinkResponse = { drink: DrinkObject };
 export type ListPackagedProductsResponse = { products: PackagedProductObject[] };
 export type GetPackagedProductResponse = { product: PackagedProductObject };

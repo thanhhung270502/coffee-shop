@@ -1,20 +1,19 @@
 "use client";
 
-import type { ListDrinksResponse } from "@common/models/product";
+import type { ListDrinksPayload, ListDrinksResponse } from "@common/models/product";
 import { API_ADMIN_DRINKS } from "@common/models/product";
 import { useQuery } from "@tanstack/react-query";
 
-import { getRequest } from "@/libs/api-client";
+import { postRequest } from "@/libs/api-client";
+import { ADMIN_DRINKS_KEYS } from "@/shared/constants/query-keys.constant";
 
-export const ADMIN_DRINKS_QUERY_KEY = ["admin", "drinks"] as const;
-
-export function useQueryAdminDrinks(filters?: { categoryId?: string; search?: string }) {
+export function useQueryAdminDrinks({ input }: { input: ListDrinksPayload }) {
   return useQuery({
-    queryKey: [...ADMIN_DRINKS_QUERY_KEY, filters ?? {}],
+    queryKey: ADMIN_DRINKS_KEYS.list(input),
     queryFn: async () => {
-      const data = await getRequest({
+      const data = await postRequest<ListDrinksPayload>({
         path: API_ADMIN_DRINKS.buildUrlPath(),
-        params: filters,
+        data: input,
       });
       return data as ListDrinksResponse;
     },

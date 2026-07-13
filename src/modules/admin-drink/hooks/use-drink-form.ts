@@ -88,7 +88,7 @@ export const useDrinkForm = () => {
       });
       setOpen(true);
     },
-    [methods]
+    [methods],
   );
 
   const handleOpenChange = useCallback(
@@ -102,7 +102,7 @@ export const useDrinkForm = () => {
         });
       }
     },
-    [methods]
+    [methods],
   );
 
   const onSubmit = methods.handleSubmit(async (values) => {

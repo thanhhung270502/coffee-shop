@@ -11,18 +11,35 @@ const packagedInclude = {
   skus: true,
 } as const;
 
-export async function findDrinks(filters?: { categoryId?: string; search?: string }) {
-  return prisma.product.findMany({
-    where: {
-      type: "DRINK",
-      ...(filters?.categoryId ? { categoryId: filters.categoryId } : {}),
-      ...(filters?.search
-        ? { name: { contains: filters.search, mode: "insensitive" as const } }
-        : {}),
-    },
-    include: drinkInclude,
-    orderBy: { name: "asc" },
-  });
+type DrinkListFilters = {
+  limit: number;
+  offset: number;
+  search?: string;
+  categoryId?: string;
+};
+
+function buildDrinkListWhere(filters: Omit<DrinkListFilters, "limit" | "offset">) {
+  const search = filters.search?.trim();
+  return {
+    type: "DRINK" as const,
+    ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+    ...(search ? { name: { contains: search, mode: "insensitive" as const } } : {}),
+  };
+}
+
+export async function findDrinks(filters: DrinkListFilters) {
+  const where = buildDrinkListWhere(filters);
+  const [total_record, items] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      include: drinkInclude,
+      orderBy: { name: "asc" },
+      skip: filters.offset,
+      take: filters.limit,
+    }),
+  ]);
+  return { total_record, items };
 }
 
 export async function findPackagedProducts(filters?: { categoryId?: string; search?: string }) {

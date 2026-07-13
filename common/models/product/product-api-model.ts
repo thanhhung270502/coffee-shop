@@ -7,6 +7,7 @@ import type {
   CreatePackagedProductResponse,
   GetDrinkResponse,
   GetPackagedProductResponse,
+  ListDrinksPayload,
   ListDrinksResponse,
   ListPackagedProductsResponse,
   UpdateDrinkRequest,
@@ -20,12 +21,12 @@ import type {
 } from "./product-model";
 
 export const API_ADMIN_DRINKS: APIDefinition = {
-  method: APIMethod.GET,
+  method: APIMethod.POST,
   baseUrl: APIBaseRoutes.ADMIN,
-  subUrl: "/drinks",
-  requestBody: {} as Record<string, never>,
+  subUrl: "/drinks/list",
+  requestBody: {} as ListDrinksPayload,
   responseBody: {} as ListDrinksResponse,
-  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/drinks`,
+  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/drinks/list`,
 };
 
 export const API_ADMIN_DRINK_CREATE: APIDefinition = {

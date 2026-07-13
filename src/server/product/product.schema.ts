@@ -12,6 +12,13 @@ const skuSchema = z.object({
   stock: z.number().int().min(0).optional(),
 });
 
+export const listDrinksSchema = z.object({
+  limit: z.number().int().min(1).max(100),
+  offset: z.number().int().min(0),
+  search: z.string().optional(),
+  categoryId: z.string().optional(),
+});
+
 export const createDrinkSchema = z.object({
   name: z.string().min(1),
   categoryId: z.string().min(1),
@@ -57,6 +64,7 @@ export const updateProductStockSchema = z.object({
   stock: z.number().int().min(0),
 });
 
+export type ListDrinksInput = z.infer<typeof listDrinksSchema>;
 export type CreateDrinkInput = z.infer<typeof createDrinkSchema>;
 export type UpdateDrinkInput = z.infer<typeof updateDrinkSchema>;
 export type CreatePackagedProductInput = z.infer<typeof createPackagedProductSchema>;
