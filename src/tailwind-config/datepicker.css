@@ -104,7 +104,7 @@
 }
 
 .langco .react-datepicker__day-names {
-  @apply flex justify-between p-0;
+  @apply flex justify-between p-0 pb-2xl;
 }
 
 .langco .react-datepicker__day-name {

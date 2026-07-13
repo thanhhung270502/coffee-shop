@@ -1,3 +1,6 @@
+/** Report Group By */
+export type EReportGroupBy = "day" | "week" | "month";
+
 /** Revenue Series */
 export type RevenuePoint = {
   date: string;

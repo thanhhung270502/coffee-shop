@@ -13,4 +13,5 @@
 @import "./layer.css";
 @import "./scrollbar.css";
 @import "./size.css";
+@import "react-datepicker/dist/react-datepicker.css";
 @import "./datepicker.css";

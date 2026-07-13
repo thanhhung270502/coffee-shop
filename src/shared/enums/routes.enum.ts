@@ -21,4 +21,5 @@ export enum SearchParams {
   From = "from",
   To = "to",
   CategoryId = "categoryId",
+  GroupBy = "groupBy",
 }

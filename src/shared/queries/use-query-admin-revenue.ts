@@ -1,6 +1,6 @@
 "use client";
 
-import type { RevenueSeriesResponse } from "@common/models/report";
+import type { EReportGroupBy, RevenueSeriesResponse } from "@common/models/report";
 import { API_ADMIN_REVENUE } from "@common/models/report";
 import { useQuery } from "@tanstack/react-query";
 
@@ -11,7 +11,7 @@ export const ADMIN_REVENUE_QUERY_KEY = ["admin", "reports", "revenue"] as const;
 export function useQueryAdminRevenue(params?: {
   from?: string;
   to?: string;
-  groupBy?: "day" | "week" | "month";
+  groupBy?: EReportGroupBy;
 }) {
   return useQuery({
     queryKey: [...ADMIN_REVENUE_QUERY_KEY, params],
