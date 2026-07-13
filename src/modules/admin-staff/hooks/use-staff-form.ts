@@ -86,7 +86,7 @@ export const useStaffForm = () => {
       });
       setOpen(true);
     },
-    [methods]
+    [methods],
   );
 
   const handleOpenChange = useCallback(
@@ -97,7 +97,7 @@ export const useStaffForm = () => {
         methods.reset(defaultValues);
       }
     },
-    [methods]
+    [methods],
   );
 
   const onSubmit = methods.handleSubmit(async (values) => {

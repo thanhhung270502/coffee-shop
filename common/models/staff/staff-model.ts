@@ -1,3 +1,5 @@
+import type { PageableResponse, PaginationQueryParams } from "../api-base";
+
 export type StaffObject = {
   id: string;
   email: string;
@@ -7,9 +9,12 @@ export type StaffObject = {
   createdAt: string;
 };
 
-export type ListStaffResponse = {
-  staff: StaffObject[];
-};
+export interface ListStaffPayload extends PaginationQueryParams {
+  search?: string;
+  isActive?: boolean;
+}
+
+export type ListStaffResponse = PageableResponse<StaffObject>;
 
 export type CreateStaffRequest = {
   email: string;

@@ -3,6 +3,7 @@ import { APIBaseRoutes, type APIDefinition, APIMethod } from "../api-base";
 import type {
   CreateStaffRequest,
   CreateStaffResponse,
+  ListStaffPayload,
   ListStaffResponse,
   ResetStaffPasswordRequest,
   ResetStaffPasswordResponse,
@@ -11,12 +12,12 @@ import type {
 } from "./staff-model";
 
 export const API_ADMIN_STAFF: APIDefinition = {
-  method: APIMethod.GET,
+  method: APIMethod.POST,
   baseUrl: APIBaseRoutes.ADMIN,
-  subUrl: "/staff",
-  requestBody: {} as Record<string, never>,
+  subUrl: "/staff/list",
+  requestBody: {} as ListStaffPayload,
   responseBody: {} as ListStaffResponse,
-  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/staff`,
+  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/staff/list`,
 };
 
 export const API_ADMIN_STAFF_CREATE: APIDefinition = {

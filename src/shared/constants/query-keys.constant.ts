@@ -1,6 +1,7 @@
 import { ListCategoriesPayload } from "@common/models/category";
 import { ListOrdersPayload } from "@common/models/order";
 import { ListDrinksPayload, ListPackagedProductsPayload } from "@common/models/product";
+import { ListStaffPayload } from "@common/models/staff";
 
 export const QUERY_KEYS = {
   // Admin
@@ -8,6 +9,7 @@ export const QUERY_KEYS = {
   ADMIN_CATEGORIES: "admin-categories",
   ADMIN_DRINKS: "admin-drinks",
   ADMIN_PRODUCTS: "admin-products",
+  ADMIN_STAFF: "admin-staff",
 };
 
 export const ADMIN_ORDERS_KEYS = {
@@ -33,4 +35,10 @@ export const ADMIN_PRODUCTS_KEYS = {
   lists: () => [...ADMIN_PRODUCTS_KEYS.all(), "list"] as const,
   list: (params: ListPackagedProductsPayload) =>
     [...ADMIN_PRODUCTS_KEYS.lists(), params] as const,
+} as const;
+
+export const ADMIN_STAFF_KEYS = {
+  all: () => [QUERY_KEYS.ADMIN_STAFF] as const,
+  lists: () => [...ADMIN_STAFF_KEYS.all(), "list"] as const,
+  list: (params: ListStaffPayload) => [...ADMIN_STAFF_KEYS.lists(), params] as const,
 } as const;

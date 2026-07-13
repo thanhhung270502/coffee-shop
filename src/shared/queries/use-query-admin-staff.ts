@@ -1,19 +1,24 @@
 "use client";
 
-import type { ListStaffResponse } from "@common/models/staff";
+import type { ListStaffPayload, ListStaffResponse } from "@common/models/staff";
 import { API_ADMIN_STAFF } from "@common/models/staff";
 import { useQuery } from "@tanstack/react-query";
 
-import { getRequest } from "@/libs/api-client";
+import { postRequest } from "@/libs/api-client";
+import { ADMIN_STAFF_KEYS } from "@/shared/constants/query-keys.constant";
+import type { QueryProps } from "@/shared/types/query-client";
 
-export const ADMIN_STAFF_QUERY_KEY = ["admin", "staff"] as const;
+type UseQueryAdminStaffProps = QueryProps<ListStaffResponse, ListStaffPayload>;
 
-export function useQueryAdminStaff() {
+export function useQueryAdminStaff({ input }: UseQueryAdminStaffProps) {
   return useQuery({
-    queryKey: ADMIN_STAFF_QUERY_KEY,
+    queryKey: ADMIN_STAFF_KEYS.list(input),
     queryFn: async () => {
-      const data = await getRequest({ path: API_ADMIN_STAFF.buildUrlPath() });
-      return data as ListStaffResponse;
+      const result = await postRequest<ListStaffPayload>({
+        path: API_ADMIN_STAFF.buildUrlPath(),
+        data: input,
+      });
+      return result as ListStaffResponse;
     },
   });
 }

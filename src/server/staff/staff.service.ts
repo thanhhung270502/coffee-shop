@@ -5,7 +5,7 @@ import { AppError } from "@/libs/errors";
 
 import {
   createStaff,
-  findAllStaff,
+  findStaff,
   findStaffById,
   findUserByEmail,
   updateStaff,
@@ -13,11 +13,12 @@ import {
 } from "./staff.repository";
 import type {
   CreateStaffInput,
+  ListStaffInput,
   ResetStaffPasswordInput,
   UpdateStaffInput,
 } from "./staff.schema";
 
-type StaffRow = Awaited<ReturnType<typeof findAllStaff>>[number];
+type StaffRow = Awaited<ReturnType<typeof findStaff>>["items"][number];
 
 function toStaffObject(staff: StaffRow): StaffObject {
   return {
@@ -30,9 +31,17 @@ function toStaffObject(staff: StaffRow): StaffObject {
   };
 }
 
-export async function listStaff(): Promise<StaffObject[]> {
-  const staff = await findAllStaff();
-  return staff.map(toStaffObject);
+export async function listStaff(input: ListStaffInput): Promise<{
+  total_record: number;
+  data: StaffObject[];
+}> {
+  const { total_record, items } = await findStaff({
+    limit: input.limit,
+    offset: input.offset,
+    search: input.search,
+    isActive: input.isActive,
+  });
+  return { total_record, data: items.map(toStaffObject) };
 }
 
 export async function createStaffService(input: CreateStaffInput): Promise<StaffObject> {
