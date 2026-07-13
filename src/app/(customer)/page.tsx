@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { CustomerHomePage } from "@/modules/customer/pages";
+import { CustomerHomePage } from "@/modules/customer-home/pages";
 
 export const metadata: Metadata = {
   title: "Coffee Shop — Order Online",

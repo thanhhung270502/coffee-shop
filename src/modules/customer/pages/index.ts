@@ -1,7 +1,6 @@
 export { CustomerAccountPage } from "./customer-account.page";
 export { CustomerDrinkCartPage } from "./customer-drink-cart.page";
 export { CustomerDrinkCheckoutPage } from "./customer-drink-checkout.page";
-export { CustomerHomePage } from "./customer-home.page";
 export { CustomerOrderPage } from "./customer-order.page";
 export { CustomerOrderHistoryPage } from "./customer-order-history.page";
 export { CustomerOrderTrackingPage } from "./customer-order-tracking.page";

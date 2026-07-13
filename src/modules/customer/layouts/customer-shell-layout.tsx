@@ -1,6 +1,7 @@
 "use client";
 
 import { Provider } from "jotai";
+import { usePathname } from "next/navigation";
 import { Toaster } from "sonner";
 
 import { CustomerFooter } from "../components/customer-footer";
@@ -12,11 +13,20 @@ type CustomerShellLayoutProps = {
 };
 
 export function CustomerShellLayout({ children }: CustomerShellLayoutProps) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
   return (
     <Provider>
       <div className="flex min-h-screen flex-col bg-white">
         <CustomerHeader />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-24 md:pb-6">{children}</main>
+        <main className="mx-auto w-full flex-1 pb-24 md:pb-6">
+          {isHome ? (
+            children
+          ) : (
+            <div className="mx-auto w-full max-w-6xl px-4 py-6">{children}</div>
+          )}
+        </main>
         <CustomerFooter />
         <MobileNav />
       </div>
