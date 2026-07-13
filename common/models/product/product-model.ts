@@ -52,9 +52,14 @@ export interface ListDrinksPayload extends PaginationQueryParams {
   categoryId?: string;
 }
 
+export interface ListPackagedProductsPayload extends PaginationQueryParams {
+  search?: string;
+  categoryId?: string;
+}
+
 export type ListDrinksResponse = PageableResponse<DrinkObject>;
+export type ListPackagedProductsResponse = PageableResponse<PackagedProductObject>;
 export type GetDrinkResponse = { drink: DrinkObject };
-export type ListPackagedProductsResponse = { products: PackagedProductObject[] };
 export type GetPackagedProductResponse = { product: PackagedProductObject };
 
 export type DrinkVariantInput = {

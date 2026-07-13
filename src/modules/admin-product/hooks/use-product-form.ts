@@ -87,7 +87,7 @@ export const useProductForm = () => {
       });
       setOpen(true);
     },
-    [methods]
+    [methods],
   );
 
   const handleOpenChange = useCallback(
@@ -101,7 +101,7 @@ export const useProductForm = () => {
         });
       }
     },
-    [methods]
+    [methods],
   );
 
   const onSubmit = methods.handleSubmit(async (values) => {

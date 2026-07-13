@@ -29,13 +29,14 @@ import type {
   CreateDrinkInput,
   CreatePackagedProductInput,
   ListDrinksInput,
+  ListPackagedProductsInput,
   UpdateDrinkInput,
   UpdatePackagedProductInput,
   UpdateProductStockInput,
 } from "./product.schema";
 
 type DrinkWithRelations = Awaited<ReturnType<typeof findDrinks>>["items"][number];
-type PackagedWithRelations = Awaited<ReturnType<typeof findPackagedProducts>>[number];
+type PackagedWithRelations = Awaited<ReturnType<typeof findPackagedProducts>>["items"][number];
 type PublicDrinkWithRelations = Awaited<ReturnType<typeof findPublicDrinks>>[number];
 type PublicPackagedWithRelations = Awaited<ReturnType<typeof findPublicPackagedProducts>>[number];
 
@@ -227,12 +228,11 @@ export async function updateDrinkStatusService(
   return getDrinkById(id);
 }
 
-export async function listPackagedProducts(filters?: {
-  categoryId?: string;
-  search?: string;
-}): Promise<PackagedProductObject[]> {
-  const products = await findPackagedProducts(filters);
-  return products.map(toPackagedObject);
+export async function listPackagedProducts(
+  input: ListPackagedProductsInput,
+): Promise<{ total_record: number; data: PackagedProductObject[] }> {
+  const { total_record, items } = await findPackagedProducts(input);
+  return { total_record, data: items.map(toPackagedObject) };
 }
 
 export async function getPackagedProductById(id: string): Promise<PackagedProductObject> {

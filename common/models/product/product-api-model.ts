@@ -9,6 +9,7 @@ import type {
   GetPackagedProductResponse,
   ListDrinksPayload,
   ListDrinksResponse,
+  ListPackagedProductsPayload,
   ListPackagedProductsResponse,
   UpdateDrinkRequest,
   UpdateDrinkResponse,
@@ -66,12 +67,12 @@ export const API_ADMIN_DRINK_STATUS: APIDefinition = {
 };
 
 export const API_ADMIN_PRODUCTS: APIDefinition = {
-  method: APIMethod.GET,
+  method: APIMethod.POST,
   baseUrl: APIBaseRoutes.ADMIN,
-  subUrl: "/products",
-  requestBody: {} as Record<string, never>,
+  subUrl: "/products/list",
+  requestBody: {} as ListPackagedProductsPayload,
   responseBody: {} as ListPackagedProductsResponse,
-  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/products`,
+  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/products/list`,
 };
 
 export const API_ADMIN_PRODUCT_CREATE: APIDefinition = {

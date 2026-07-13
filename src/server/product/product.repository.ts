@@ -42,18 +42,35 @@ export async function findDrinks(filters: DrinkListFilters) {
   return { total_record, items };
 }
 
-export async function findPackagedProducts(filters?: { categoryId?: string; search?: string }) {
-  return prisma.product.findMany({
-    where: {
-      type: "PACKAGED",
-      ...(filters?.categoryId ? { categoryId: filters.categoryId } : {}),
-      ...(filters?.search
-        ? { name: { contains: filters.search, mode: "insensitive" as const } }
-        : {}),
-    },
-    include: packagedInclude,
-    orderBy: { name: "asc" },
-  });
+type PackagedListFilters = {
+  limit: number;
+  offset: number;
+  search?: string;
+  categoryId?: string;
+};
+
+function buildPackagedListWhere(filters: Omit<PackagedListFilters, "limit" | "offset">) {
+  const search = filters.search?.trim();
+  return {
+    type: "PACKAGED" as const,
+    ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+    ...(search ? { name: { contains: search, mode: "insensitive" as const } } : {}),
+  };
+}
+
+export async function findPackagedProducts(filters: PackagedListFilters) {
+  const where = buildPackagedListWhere(filters);
+  const [total_record, items] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      include: packagedInclude,
+      orderBy: { name: "asc" },
+      skip: filters.offset,
+      take: filters.limit,
+    }),
+  ]);
+  return { total_record, items };
 }
 
 export async function findProductById(id: string) {
