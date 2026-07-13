@@ -20,7 +20,7 @@ export type CategoryFormData = z.infer<typeof categoryFormSchema>;
 
 const defaultValues: CategoryFormData = { name: "", sortOrder: 0 };
 
-export const useCategoryForm = (activeTab: EProductType) => {
+export const useCategoryForm = (activeType: EProductType) => {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<CategoryObject | null>(null);
 
@@ -44,7 +44,7 @@ export const useCategoryForm = (activeTab: EProductType) => {
       methods.reset({ name: category.name, sortOrder: category.sortOrder });
       setOpen(true);
     },
-    [methods]
+    [methods],
   );
 
   const handleOpenChange = useCallback(
@@ -55,7 +55,7 @@ export const useCategoryForm = (activeTab: EProductType) => {
         methods.reset(defaultValues);
       }
     },
-    [methods]
+    [methods],
   );
 
   const onSubmit = methods.handleSubmit(async (values) => {
@@ -67,7 +67,7 @@ export const useCategoryForm = (activeTab: EProductType) => {
     } else {
       await createMutation.mutateAsync({
         name: values.name,
-        type: activeTab,
+        type: activeType,
         sortOrder: values.sortOrder,
       });
     }

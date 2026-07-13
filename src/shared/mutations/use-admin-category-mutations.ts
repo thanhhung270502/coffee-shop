@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { deleteRequest, patchRequest, postRequest } from "@/libs/api-client";
-import { ADMIN_CATEGORIES_QUERY_KEY } from "@/shared/queries/use-query-admin-categories";
+import { ADMIN_CATEGORIES_KEYS } from "@/shared/constants";
 
 export function useCreateCategoryMutation() {
   const queryClient = useQueryClient();
@@ -29,7 +29,7 @@ export function useCreateCategoryMutation() {
       })) as CreateCategoryResponse;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_KEYS.all() });
       toast.success("Category created");
     },
     onError: (error: Error) => toast.error(error.message ?? "Failed to create category"),
@@ -47,7 +47,7 @@ export function useUpdateCategoryMutation() {
       })) as UpdateCategoryResponse;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_KEYS.all() });
       toast.success("Category updated");
     },
     onError: (error: Error) => toast.error(error.message ?? "Failed to update category"),
@@ -64,7 +64,7 @@ export function useDeleteCategoryMutation() {
       })) as DeleteCategoryResponse;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ADMIN_CATEGORIES_KEYS.all() });
       toast.success("Category deleted");
     },
     onError: (error: Error) => toast.error(error.message ?? "Failed to delete category"),

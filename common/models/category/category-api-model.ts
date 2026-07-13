@@ -4,18 +4,19 @@ import type {
   CreateCategoryRequest,
   CreateCategoryResponse,
   DeleteCategoryResponse,
+  ListCategoriesPayload,
   ListCategoriesResponse,
   UpdateCategoryRequest,
   UpdateCategoryResponse,
 } from "./category-model";
 
 export const API_ADMIN_CATEGORIES: APIDefinition = {
-  method: APIMethod.GET,
+  method: APIMethod.POST,
   baseUrl: APIBaseRoutes.ADMIN,
-  subUrl: "/categories",
-  requestBody: {} as Record<string, never>,
+  subUrl: "/categories/list",
+  requestBody: {} as ListCategoriesPayload,
   responseBody: {} as ListCategoriesResponse,
-  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/categories`,
+  buildUrlPath: () => `${APIBaseRoutes.ADMIN}/categories/list`,
 };
 
 export const API_ADMIN_CATEGORY_CREATE: APIDefinition = {

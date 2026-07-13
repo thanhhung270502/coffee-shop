@@ -50,12 +50,14 @@ export const useDrinkForm = () => {
   const [editing, setEditing] = useState<DrinkObject | null>(null);
   const defaultCategoryIdRef = useRef("");
 
-  const { data: categoriesData } = useQueryAdminCategories(EProductType.DRINK);
+  const { data: categoriesData } = useQueryAdminCategories({
+    input: { type: EProductType.DRINK, limit: 100, offset: 0 },
+  });
   const { data: toppingsData } = useQueryAdminToppings();
   const createMutation = useCreateDrinkMutation();
   const updateMutation = useUpdateDrinkMutation();
 
-  const categories = categoriesData?.categories ?? [];
+  const categories = categoriesData?.data ?? [];
   const toppings = toppingsData?.toppings ?? [];
   defaultCategoryIdRef.current = categories[0]?.id ?? "";
 

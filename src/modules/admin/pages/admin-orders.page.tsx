@@ -25,9 +25,9 @@ export function AdminOrdersPage() {
       types: "type" in tabFilters ? [tabFilters.type as EOrderType] : undefined,
       channels: "channel" in tabFilters ? [tabFilters.channel as EOrderChannel] : undefined,
     }),
-    [tabFilters],
+    [tabFilters]
   );
-  const { data, isLoading } = useQueryAdminOrders(payload);
+  const { data, isLoading } = useQueryAdminOrders({ input: payload });
 
   const columns = useMemo<ColumnDef<OrderObject>[]>(
     () => [
@@ -35,7 +35,10 @@ export function AdminOrdersPage() {
         accessorKey: "orderNumber",
         header: "Order #",
         cell: ({ row }) => (
-          <Link href={`/admin/orders/${row.original.id}`} className="text-brand-tertiary hover:underline">
+          <Link
+            href={`/admin/orders/${row.original.id}`}
+            className="text-brand-tertiary hover:underline"
+          >
             {row.original.orderNumber}
           </Link>
         ),
@@ -61,11 +64,13 @@ export function AdminOrdersPage() {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => (
-          <Badge variant="default">{STATUS_LABELS[row.original.status] ?? row.original.status}</Badge>
+          <Badge variant="default">
+            {STATUS_LABELS[row.original.status] ?? row.original.status}
+          </Badge>
         ),
       },
     ],
-    [],
+    []
   );
 
   return (
@@ -82,7 +87,7 @@ export function AdminOrdersPage() {
               "rounded-lg px-4 py-2 text-sm font-medium transition-colors",
               activeTab === index
                 ? "bg-brand-primary text-brand-tertiary"
-                : "bg-white text-secondary hover:bg-secondary-hover",
+                : "text-secondary hover:bg-secondary-hover bg-white"
             )}
           >
             {tab.label}
@@ -90,12 +95,16 @@ export function AdminOrdersPage() {
         ))}
       </div>
 
-      <div className="rounded-xl border border-primary bg-white p-4">
+      <div className="border-primary rounded-xl border bg-white p-4">
         <Table
           data={data?.data ?? []}
           columns={columns}
           isLoading={isLoading}
-          emptyState={<Typography variant="body-sm" color="secondary">No orders yet</Typography>}
+          emptyState={
+            <Typography variant="body-sm" color="secondary">
+              No orders yet
+            </Typography>
+          }
         />
       </div>
     </div>

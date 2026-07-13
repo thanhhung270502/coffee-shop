@@ -47,11 +47,13 @@ export const useProductForm = () => {
   const [editing, setEditing] = useState<PackagedProductObject | null>(null);
   const defaultCategoryIdRef = useRef("");
 
-  const { data: categoriesData } = useQueryAdminCategories(EProductType.PACKAGED);
+  const { data: categoriesData } = useQueryAdminCategories({
+    input: { type: EProductType.PACKAGED, limit: 100, offset: 0 },
+  });
   const createMutation = useCreateProductMutation();
   const updateMutation = useUpdateProductMutation();
 
-  const categories = categoriesData?.categories ?? [];
+  const categories = categoriesData?.data ?? [];
   defaultCategoryIdRef.current = categories[0]?.id ?? "";
 
   const methods = useForm<ProductFormData>({

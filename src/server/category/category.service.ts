@@ -10,12 +10,12 @@ import {
   createCategory,
   deleteCategory,
   findActiveCategories,
-  findAllCategories,
+  findCategories,
   findCategoryById,
   findCategoryBySlug,
   updateCategory,
 } from "./category.repository";
-import type { CreateCategoryInput, UpdateCategoryInput } from "./category.schema";
+import type { CreateCategoryInput, ListCategoriesInput, UpdateCategoryInput } from "./category.schema";
 import type { CategoryWithCount } from "./category.types";
 
 function toCategoryObject(category: CategoryWithCount): CategoryObject {
@@ -44,9 +44,16 @@ async function uniqueSlug(baseName: string, excludeId?: string): Promise<string>
   }
 }
 
-export async function listCategories(type?: ProductType): Promise<CategoryObject[]> {
-  const categories = await findAllCategories(type);
-  return categories.map(toCategoryObject);
+export async function listCategories(
+  input: ListCategoriesInput,
+): Promise<{ total_record: number; data: CategoryObject[] }> {
+  const { total_record, categories } = await findCategories({
+    limit: input.limit,
+    offset: input.offset,
+    type: input.type as ProductType | undefined,
+    search: input.search,
+  });
+  return { total_record, data: categories.map(toCategoryObject) };
 }
 
 export async function listPublicCategories(type?: ProductType): Promise<PublicCategoryObject[]> {

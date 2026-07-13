@@ -1,4 +1,3 @@
-export * from "./admin-categories.page";
 export * from "./admin-dashboard.page";
 export * from "./admin-drinks.page";
 export * from "./admin-order-detail.page";

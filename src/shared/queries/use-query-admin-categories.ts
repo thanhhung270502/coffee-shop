@@ -1,22 +1,25 @@
 "use client";
 
-import type { EProductType, ListCategoriesResponse } from "@common/models/category";
+import type { ListCategoriesPayload, ListCategoriesResponse } from "@common/models/category";
 import { API_ADMIN_CATEGORIES } from "@common/models/category";
 import { useQuery } from "@tanstack/react-query";
 
-import { getRequest } from "@/libs/api-client";
+import { postRequest } from "@/libs/api-client";
 
-export const ADMIN_CATEGORIES_QUERY_KEY = ["admin", "categories"] as const;
+import { ADMIN_CATEGORIES_KEYS } from "../constants";
+import type { QueryProps } from "../types/query-client";
 
-export function useQueryAdminCategories(type?: EProductType) {
+type UseQueryAdminCategoriesProps = QueryProps<ListCategoriesResponse, ListCategoriesPayload>;
+
+export function useQueryAdminCategories({ input }: UseQueryAdminCategoriesProps) {
   return useQuery({
-    queryKey: [...ADMIN_CATEGORIES_QUERY_KEY, type ?? "all"],
+    queryKey: ADMIN_CATEGORIES_KEYS.list(input),
     queryFn: async () => {
-      const data = await getRequest({
+      const result = await postRequest<ListCategoriesPayload>({
         path: API_ADMIN_CATEGORIES.buildUrlPath(),
-        params: type ? { type } : undefined,
+        data: input,
       });
-      return data as ListCategoriesResponse;
+      return result as ListCategoriesResponse;
     },
   });
 }

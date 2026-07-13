@@ -1,6 +1,46 @@
 import type { ProductType } from "@/generated/prisma";
 import { prisma } from "@/libs/prisma";
 
+type CategoryListFilters = {
+  limit: number;
+  offset: number;
+  type?: ProductType;
+  search?: string;
+};
+
+function buildCategoryListWhere(filters: Omit<CategoryListFilters, "limit" | "offset">) {
+  const search = filters.search?.trim();
+
+  return {
+    ...(filters.type ? { type: filters.type } : {}),
+    ...(search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" as const } },
+            { slug: { contains: search, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+  };
+}
+
+export async function findCategories(filters: CategoryListFilters) {
+  const where = buildCategoryListWhere(filters);
+
+  const [total_record, categories] = await Promise.all([
+    prisma.category.count({ where }),
+    prisma.category.findMany({
+      where,
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      include: { _count: { select: { products: true } } },
+      skip: filters.offset,
+      take: filters.limit,
+    }),
+  ]);
+
+  return { total_record, categories };
+}
+
 export async function findAllCategories(type?: ProductType) {
   return prisma.category.findMany({
     where: type ? { type } : undefined,

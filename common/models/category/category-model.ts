@@ -13,8 +13,16 @@ export type CategoryObject = {
   productCount: number;
 };
 
+export type ListCategoriesPayload = {
+  limit: number;
+  offset: number;
+  type?: EProductType;
+  search?: string;
+};
+
 export type ListCategoriesResponse = {
-  categories: CategoryObject[];
+  total_record: number;
+  data: CategoryObject[];
 };
 
 export type CreateCategoryRequest = {

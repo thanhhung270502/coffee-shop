@@ -15,18 +15,8 @@ type CategoryFormProps = Pick<
 export const CategoryForm = ({ methods, onSubmit, isSubmitting, editing }: CategoryFormProps) => (
   <FormProvider formMethods={methods} onSubmit={onSubmit} className="flex flex-col gap-4">
     <DialogTitle>{editing ? "Edit Category" : "Add Category"}</DialogTitle>
-    <RHFInput
-      name="name"
-      control={methods.control}
-      label="Category Name"
-      required
-    />
-    <RHFInput
-      name="sortOrder"
-      control={methods.control}
-      label="Sort Order"
-      type="number"
-    />
+    <RHFInput name="name" control={methods.control} label="Category Name" required />
+    <RHFInput name="sortOrder" control={methods.control} label="Sort Order" type="number" />
     <div className="flex justify-end gap-2">
       <DialogClose
         render={
