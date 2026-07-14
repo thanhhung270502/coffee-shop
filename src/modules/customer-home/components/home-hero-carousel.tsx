@@ -54,7 +54,7 @@ export const HomeHeroCarousel = ({ slides }: HomeHeroCarouselProps) => {
     >
       <div
         ref={scrollRef}
-        className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory scrollbar-none overflow-x-auto scroll-smooth [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {slides.map((slide, index) => (
           <div
@@ -73,7 +73,7 @@ export const HomeHeroCarousel = ({ slides }: HomeHeroCarouselProps) => {
               />
               <div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
               <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-12 md:px-8 md:py-16">
-                <Typography variant="heading-xl" className="max-w-xl text-white">
+                <Typography variant="heading-xl" className="font-display max-w-2xl text-white">
                   {slide.title}
                 </Typography>
                 <Typography variant="body-lg" className="max-w-lg text-white/90">
@@ -119,7 +119,7 @@ export const HomeHeroCarousel = ({ slides }: HomeHeroCarouselProps) => {
                 type="button"
                 variant="tertiary-gray"
                 size="xs"
-                className={`!min-h-0 !rounded-full !p-0 ${
+                className={`min-h-0! rounded-full! p-0! ${
                   index === activeIndex ? "h-2 w-6 bg-white" : "size-2 bg-white/50"
                 }`}
                 onClick={() => goToSlide(index)}

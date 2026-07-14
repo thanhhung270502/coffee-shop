@@ -143,6 +143,7 @@
   /* Typography - Font Family */
   --font-family-base: var(--font-roboto), sans-serif;
   --font-family-heading: var(--font-trade-gothic), sans-serif;
+  --font-family-display: var(--font-source-serif-4), serif;
 
   /* Typography - Font Weights */
   --font-weight-light: 300;
