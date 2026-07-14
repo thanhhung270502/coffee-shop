@@ -117,8 +117,12 @@ export async function createOrder(data: {
   note?: string;
   paymentMethod: "COD" | "BANK_TRANSFER" | "CASH" | "MOMO";
   paymentStatus?: "PENDING" | "PAID";
+  paymentReference?: string;
   subtotal: number;
   shippingFee: number;
+  discount?: number;
+  taxAmount?: number;
+  taxRate?: number;
   total: number;
   items: CreateOrderItemData[];
 }) {
@@ -137,8 +141,12 @@ export async function createOrder(data: {
       note: data.note,
       paymentMethod: data.paymentMethod,
       paymentStatus: data.paymentStatus,
+      paymentReference: data.paymentReference,
       subtotal: data.subtotal,
       shippingFee: data.shippingFee,
+      discount: data.discount ?? 0,
+      taxAmount: data.taxAmount ?? 0,
+      taxRate: data.taxRate ?? 0,
       total: data.total,
       items: {
         create: data.items.map((item) => ({

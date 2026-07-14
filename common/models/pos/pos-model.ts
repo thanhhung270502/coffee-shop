@@ -22,6 +22,10 @@ export type CreatePosOrderRequest = {
   customerName?: string;
   note?: string;
   paymentMethod: "CASH" | "BANK_TRANSFER";
+  paymentReference?: string;
+  shippingFee?: number;
+  discount?: number;
+  taxRate?: number;
   items: POSOrderItemInput[];
 };
 

@@ -4,8 +4,7 @@ import type { EOrderStatus } from "@common/models/order";
 import { EOrderChannel } from "@common/models/order";
 import { toast } from "sonner";
 
-import { Skeleton } from "@/shared/components/skeleton";
-import { Typography } from "@/shared/components/typography";
+import { Badge, Skeleton, Typography } from "@/shared/components";
 import { usePosOrderStatusMutation } from "@/shared/mutations/use-pos-order-status-mutation";
 import { useQueryPosQueue } from "@/shared/queries/use-query-pos-queue";
 
@@ -29,12 +28,10 @@ export function PosOnlineOrdersPage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-4 py-3">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex items-center gap-2 border-b border-neutral-200 bg-white px-4 py-3">
         <Typography variant="heading-sm">Online Orders</Typography>
-        <Typography variant="body-xs" color="secondary">
-          Auto-refreshing every 12s
-        </Typography>
+        {onlineOrders.length > 0 ? <Badge>{onlineOrders.length}</Badge> : null}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">

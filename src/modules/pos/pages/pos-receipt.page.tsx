@@ -120,6 +120,41 @@ export function PosReceiptPage({ orderId }: PosReceiptPageProps) {
 
         <Separator className="my-3" />
 
+        <div className="space-y-1">
+          <div className="flex justify-between">
+            <Typography variant="body-sm" color="secondary">
+              Subtotal
+            </Typography>
+            <Typography variant="body-sm">{formatCurrency(order.subtotal)}</Typography>
+          </div>
+          {order.taxAmount > 0 ? (
+            <div className="flex justify-between">
+              <Typography variant="body-sm" color="secondary">
+                Tax ({order.taxRate}%)
+              </Typography>
+              <Typography variant="body-sm">{formatCurrency(order.taxAmount)}</Typography>
+            </div>
+          ) : null}
+          {order.shippingFee > 0 ? (
+            <div className="flex justify-between">
+              <Typography variant="body-sm" color="secondary">
+                Shipping
+              </Typography>
+              <Typography variant="body-sm">{formatCurrency(order.shippingFee)}</Typography>
+            </div>
+          ) : null}
+          {order.discount > 0 ? (
+            <div className="flex justify-between">
+              <Typography variant="body-sm" color="secondary">
+                Discount
+              </Typography>
+              <Typography variant="body-sm">-{formatCurrency(order.discount)}</Typography>
+            </div>
+          ) : null}
+        </div>
+
+        <Separator className="my-3" />
+
         {/* Total */}
         <div className="flex justify-between">
           <Typography variant="body-md" className="font-bold">

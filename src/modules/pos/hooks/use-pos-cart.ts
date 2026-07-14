@@ -50,6 +50,13 @@ export function usePosCart() {
     setItems([]);
   }, [setItems]);
 
+  const replaceItems = useCallback(
+    (nextItems: POSCartItem[]) => {
+      setItems(nextItems);
+    },
+    [setItems],
+  );
+
   const total = useMemo(
     () => items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
     [items],
@@ -63,6 +70,7 @@ export function usePosCart() {
     removeItem,
     updateQuantity,
     clearCart,
+    setItems: replaceItems,
     total,
     itemCount,
   };

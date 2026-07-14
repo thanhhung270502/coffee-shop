@@ -61,6 +61,8 @@ function toOrderObject(order: OrderWithItems): OrderObject {
     subtotal: order.subtotal,
     shippingFee: order.shippingFee,
     discount: order.discount,
+    taxAmount: order.taxAmount,
+    taxRate: order.taxRate,
     total: order.total,
     items: order.items.map((item) => {
       const options = getItemOptions(item.options);
@@ -393,6 +395,17 @@ export async function createPosOrderService(
 
   const orderNumber = await getNextOrderNumber();
 
+  const shippingFee = input.shippingFee ?? 0;
+  const discount = input.discount ?? 0;
+  const taxRate = input.taxRate ?? 0;
+
+  if (discount > subtotal) {
+    throw new AppError("Discount cannot exceed subtotal", 400);
+  }
+
+  const taxAmount = Math.round(subtotal * (taxRate / 100));
+  const total = Math.max(0, subtotal + taxAmount + shippingFee - discount);
+
   const order = await createOrder({
     orderNumber,
     type: "DRINK_ORDER",
@@ -401,10 +414,14 @@ export async function createPosOrderService(
     createdById: staffId,
     note: input.note,
     paymentMethod: input.paymentMethod,
+    paymentReference: input.paymentReference,
     paymentStatus: "PAID",
     subtotal,
-    shippingFee: 0,
-    total: subtotal,
+    shippingFee,
+    discount,
+    taxAmount,
+    taxRate,
+    total,
     items: orderItems,
   });
 

@@ -78,6 +78,10 @@ export const createPosOrderSchema = z.object({
   customerName: z.string().optional(),
   note: z.string().optional(),
   paymentMethod: z.enum(["CASH", "BANK_TRANSFER"]),
+  paymentReference: z.string().optional(),
+  shippingFee: z.number().int().min(0, "Shipping fee cannot be negative").optional(),
+  discount: z.number().int().min(0, "Discount cannot be negative").optional(),
+  taxRate: z.number().int().min(0, "Tax rate cannot be negative").max(100, "Tax rate cannot exceed 100%").optional(),
   items: z.array(posOrderItemSchema).min(1, "At least one item is required"),
 });
 

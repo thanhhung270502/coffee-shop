@@ -76,6 +76,8 @@ export type OrderObject = {
   subtotal: number;
   shippingFee: number;
   discount: number;
+  taxAmount: number;
+  taxRate: number;
   total: number;
   items: OrderItemObject[];
   createdAt: string;

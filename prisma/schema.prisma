@@ -170,6 +170,8 @@ model Order {
   subtotal        Int
   shippingFee     Int              @default(0)
   discount        Int              @default(0)
+  taxAmount       Int              @default(0)
+  taxRate         Int              @default(0)
   total           Int
   paymentReference String?
   items           OrderItem[]
@@ -211,5 +213,6 @@ model ShopSettings {
   phone        String?
   openTime     String?
   closeTime    String?
-  baseShipping Int     @default(15000)
+  baseShipping   Int     @default(15000)
+  defaultTaxRate Int     @default(0)
 }

@@ -5,9 +5,8 @@ import type { EOrderStatus, OrderObject } from "@common/models/order";
 import { EOrderChannel } from "@common/models/order";
 import { toast } from "sonner";
 
-import { Badge } from "@/shared/components/badge";
-import { Skeleton } from "@/shared/components/skeleton";
-import { Typography } from "@/shared/components/typography";
+import { Badge, Skeleton, Typography } from "@/shared/components";
+import { Button } from "@/shared/components/button";
 import { usePosOrderStatusMutation } from "@/shared/mutations/use-pos-order-status-mutation";
 import { useQueryPosQueue } from "@/shared/queries/use-query-pos-queue";
 
@@ -45,42 +44,35 @@ export function PosQueuePage() {
   };
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      {/* Tab bar */}
-      <div className="flex items-center gap-2 border-b border-zinc-200 bg-white px-4 py-2">
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex flex-wrap items-center gap-2 border-b border-neutral-200 bg-white px-4 py-3">
+        <Typography variant="heading-sm" className="mr-2">
+          Kitchen Queue
+        </Typography>
         {TABS.map((tab) => {
           const count =
             tab.id === "all"
               ? allOrders.length
               : filterOrders(allOrders, tab.id).length;
           return (
-            <button
+            <Button
               key={tab.id}
-              type="button"
+              variant={activeTab === tab.id ? "primary" : "secondary-gray"}
+              size="sm"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                activeTab === tab.id
-                  ? "bg-amber-600 text-white"
-                  : "text-zinc-600 hover:bg-zinc-100"
-              }`}
+              className="gap-1.5"
             >
               {tab.label}
-              {count > 0 && (
+              {count > 0 ? (
                 <Badge className={activeTab === tab.id ? "bg-white/20 text-white" : ""}>
                   {count}
                 </Badge>
-              )}
-            </button>
+              ) : null}
+            </Button>
           );
         })}
-        <div className="ml-auto">
-          <Typography variant="body-xs" color="secondary">
-            Auto-refreshing every 12s
-          </Typography>
-        </div>
       </div>
 
-      {/* Queue */}
       <div className="flex-1 overflow-y-auto p-4">
         {isLoading ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
